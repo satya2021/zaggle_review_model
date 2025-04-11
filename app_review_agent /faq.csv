@@ -1,0 +1,644 @@
+Sl no,Product,User Query,Product Responses
+1,Save,How to complete my Min KYC?,"
+To complete your Min KYC for  IndusInd Zinger Multiwallet Card:
+1. Download Zaggle Mobile App, Login /Signup with your registred mobile no.
+2. Tap on ""Zaggle Cards"" at the bottom of the page.
+3. A popup will appear prompting you to complete the Min KYC and Card Activation process.
+4. Click on ""Min KYC & Card Activation"" and fill in the required details for the Min KYC process.
+5. Ensure to select the checkbox for consent and proceed to click on “Send OTP”. An OTP will be sent to your registered mobile number.
+6. Enter the OTP and click on ""CONFIRM"". Your Min KYC will be completed successfully.
+7. Your card will then be successfully added and displayed in the Zaggle Cards section.
+If user select the second answer, show below answer.
+To complete your Min KYC for Yes Bank Zinger Multiwallet Card:
+1. Download Zaggle Mobile App, Login /Signup with your registred mobile no.
+2. Tap on ""Zaggle Cards"" at the bottom of the page.
+3. A popup will appear prompting you to complete the Yes Bank Account Registration & Min KYC  process.
+4. Click on ""Yes Bank Account Registration and Min KYC"" and provide the necessary details  for the Min KYC process.
+5. Ensure to consent to providing your Aadhaar number for Min KYC by selecting the checkbox.
+6. Click on ""Submit"". Your Min KYC process will be successfully completed.
+7.  Your card will then be added and displayed in the Zaggle Cards section."
+2,Propel,How to purchase Brand Voucher,"To purchase e-vouchers or physical vouchers from the Propel Web platform, please follow these steps:
+1.	Visit www.zagglepropel.com.
+2.	Login using your email ID or mobile number along with your password or OTP.
+3.	Click on ""Login"" button.
+4.	Navigate to the ""Redeem"" section.
+5.	Choose between e-voucher or physical voucher tabs. Select the desired category or search for brands on the search bar.
+6.	Choose the denomination for the brand and click on ""Add to Cart"".
+7.	Go to the cart.
+8.	Verify the denomination and quantity in your cart.
+9.	If applicable, add the delivery address for physical vouchers.
+10.	Select the checkbox for ""Zaggle Propel Card"".
+11.	Click on ""Place Order"".
+12.	Optional: If you have insufficient points, select ""Other Payment Mode: Debit Card/Credit Card/Net Banking"". Click on ""Place Order"". You will be redirected to the payment gateway. Enter your mobile number, followed by UPI, card, or net banking details and click on ""Pay Now"".
+13.	Upon successful order placement, a success message will be displayed.
+
+To purchase e-vouchers or physical vouchers from the Zaggle mobile app, follow these steps:
+1.	Login to the mobile app using OTP.
+2.	Go to the home page of the Zaggle Mobile App.
+3.	Tap on ""Zaggle Cards"" at the bottom of the page.
+4.	Tap on ""Zaggle Propel Points"".
+5.	Click on ""Redeem"".
+15.	Filter by product type - E-Voucher or Physical Voucher and its corresponding category. Or search for the brand name on the search bar.
+6.	Tap on the product image.
+7.	Select the denomination for the corresponding brand and click on ""Add to Cart"".
+8.	Go to the cart.
+9.	Verify the denomination and quantity in your cart.
+10.	If applicable, add the delivery address for physical vouchers.
+11.	Click on ""View Details"" under Zaggle Pay Balance section.
+12.	Select the checkbox for ""Zaggle Propel Points"".
+13.	Click on ""Continue"".
+14.	Optional: If you have insufficient points, click on ""Other Payment Mode: Debit/Credit Card/Net Banking or Mobikwik"". Click on ""Continue"". If another payment mode is selected, you will be redirected to the payment gateway. Enter your UPI or card or Net Banking details.
+15.	Upon successful order placement, a success message will be displayed.
+"
+3,Save,How to start using Zaggle card,"To begin using your Zaggle Card, complete the Min-KYC process and verify with OTP. Set your POS PIN in card settings, adjust transaction limits in ""Manage Card Usage,"" and ensure your organization has loaded funds onto the respective wallet."
+4,Save,Need to relink the card,"Your Zaggle Card is linked to your registered mobile number. If it is not linked, please contact your HR to update your mobile number for re-linking."
+5,Save,Getting message as Invalid card number,"Please double-check the card number before entering. If the issue persists, contact our support team at care@zaggle.in or call at 18605001231. Monday to Saturday. 10 AM to 7.00 PM."
+6,Save,Zaggle card is not working,"Apologies for the inconvenience. Please contact our support team at care@zaggle.in or by calling at 18605001231, Monday to Saturday, 10 AM to 7.00 PM. With the following details:
+a) Merchant Name
+b) Transaction Date & Time
+c) Transaction Details (e.g., error screenshot, etc.)
+d) URN Number/Registered Mobile Number for further action."
+7,Save,How to view urn number,"The URN Number is mentioned on the Welcome Kit cover provided to you. 
+In the Zaggle Mobile App,click on Zaggle Cards at the bottom. Expand the Zaggle card view. The URN number is available below the masked card number details."
+8,Save,How to withdraw money from zaggle card,"Cash can be withdrawn only from the expense wallet from any ATM, subject to funds availability. Each transaction, including balance enquiries and statement requests, incurs a charge of Rs. 30 + 18% GST."
+9,EDGE,How to activate/Add Kuber Gift Card,"To activate or link your Zaggle Card, navigate to ""Zaggle Cards"" in the app, select ""Activate/Link your Zaggle Card"", and follow the prompts to enter your card number and OTP. Your card will be successfully added or linked to your account."
+10,EDGE,Check the balance of the gift cards,"To check your Kuber Gift Card balance, go to the home page of the Zaggle Mobile App, tap on ""Zaggle Cards,"" select your card, and view the balance displayed."
+11,Save,UPI payment from app,"
+Currently, UPI payment options are not available. We are actively working to enhance our services and hope to offer this feature soon. Thank you for your trust in Zaggle!"
+12,Save,Where I can use zaggle meal card,"The Zaggle meal card is accepted at all VISA/RuPay accepting food outlets, including online and offline stores, restaurants, and food courts. Examples include Bigbasket, D-Mart, supermarkets, Swiggy, Zomato and mroe.."
+13,Save,Where zaggle Card can be used,"The Zaggle card is a prepaid card, that can be used at any VISA/Rupay merchant across India as per the card program. Please refer to the welcome letter for more details."
+14,Save,What is status of KYC,"To check your KYC status, go to ""Zaggle Cards"" in the Zaggle Mobile App, select your card, and view the KYC status beneath the card."
+15,Save,Where to view card on app,"To view your Zaggle Card, go to ""Zaggle Cards"" in the Zaggle Mobile App, select your card.
+You can view the wallet wise balance. To view the card details to do online transactions, enter your MPIN for authentication. And view card details."
+16,Save,How to update mobile number,"To update your mobile number, please send the details to care@zaggle.in. Our team will process your request promptly. Thank you!"
+17,Save,How to add new card,"
+1. IndusInd Kuber Gift Card
+To activate or link your Zaggle Card, go to the Zaggle Mobile App home page, tap on ""Zaggle Cards,"" select ""Activate/Link your Zaggle Card,"" enter your card number, proceed with the OTP, and confirm.
+
+2. Indus Bank Zinger Multiwallet card
+You need to activate your card by completing the Min KYC and Card Activation process via the Zaggle Mobile App. Follow the prompts to enter your details, consent, and verify with OTP.
+
+3. Yes Bank Zinger Multiwallet:
+Complete the Yes Bank Account Registration and Min KYC process through the Zaggle Mobile App. Provide necessary details, consent to using your Aadhaar number, and submit to add your card."
+18,Save,How to set Mpin,"To create or set an MPIN, follow these steps:
+
+1. Go to ""Zaggle Cards"" in the Zaggle Mobile App.
+2. Tap the settings icon.
+3. Select ""Create MPIN.""
+4. Enter your desired MPIN and answer the security questions.
+5. Click ""Submit.""
+Your MPIN will be successfully created!"
+19,Save,How can I change IPIN?,"To change your IPIN, follow these steps:
+
+1. Go to ""Zaggle Cards"" in the Zaggle Mobile App.
+2. Select your card.
+3. Tap the settings icon.
+4. Choose ""Set IPIN.""
+5. Enter the new IPIN and OTP.
+6. Click ""Confirm.""
+Your IPIN will be successfully updated!"
+20,EMS,Can an expense be removed from a report?,"Yes, an expense can be removed from the report before the report has been submitted. To remove as an expense from the submitted report, however, you have to first recall the report, then remove the expense and re-submit."
+21,EMS,Can I attach multiple receipts to an expense?,"Yes. You can attach up to 3 receipts of a maximum of 1 MB each to an expense. Files of JPG, PNG, and PDF formats can be uploaded as receipts."
+22,EMS,Can I manually enter a mileage amount?,All users can manually enter a mileage amount from below path: End-User Dashboard -> Expenses -> Add Expense -> Mileage.
+23,EMS,Can I set different rules for a specific category?,"Yes, you can set the different rules and limits for each category at the below path: Administrator Dashboard -> Admin -> Categories -> Select any Category -> Edit."
+24,EMS,Can I submit an expense that has a policy violation?,"Yes, you can add an expense with policy violation to the report and submit it and submit it for approval. The approvers will be able to see the policy violation warnings and react appropriately."
+25,EMS,Can I switch off Smart Scan and record expenses from receipts manually?,"Users have a choice of uploading receipts directly. But, if an organization wants to do away with the Smart Scan completely, they can contact Zaggle and have it turned off."
+26,EMS,Can I upload receipts in any format?,"Files of JPG, PNG, and PDF formats can be uploaded as receipts."
+27,EDGE,Can the POS pin be set or changed?,"Yes, You can set/change the POS PIN.
+To change the POS PIN, follow these steps: (For IndusInd Prepaid Cards)
+1. Go to the home page of the Zaggle Mobile App.
+2. Tap on ""Zaggle Cards"" at the bottom of the page.
+3. Select your Zaggle Card.
+4. Tap on the settings icon located at the top right corner.
+5. Choose the 'Set POS PIN' option.
+6. Enter the new POS PIN.
+7. Provide the OTP.
+8. Click on 'Confirm'.
+9. Your POS PIN will be successfully updated.
+
+To change the POS PIN, follow these steps: (For Yes Bank Prepaid Cards- Zinger Cards)
+1. Go to the home page of the Zaggle Mobile App.
+2. Tap on ""Zaggle Cards"" at the bottom of the page.
+3. Select your Zaggle Card.
+4. Tap on the settings icon located at the top right corner.
+5. Choose the 'Set POS PIN' option.
+6. Enter the new POS PIN and Expiry Date in the format (MM/YY).
+7. Click on the 'SET PIN' button.
+8. Your POS PIN will be successfully updated."
+28,Edge,Can the ZAKEY be loaded again?,"Yes, it is a reloadable card and can be topped up based on your KYC status."
+29,EDGE,Can we use Kuber card online?,Yes you can use Kuber Card online across any merchants in India
+30,SAVE,Can you provide us with a minimum & maximum limit for all wallets as per RBI guidelines?,"Yes, the maximum limit with Min KYC is _10,000, while the maximum limit with Full KYC is _200,000"
+31,EDGE,"Download the report of amount credited and debited
+How to see the summary of the transaction done
+Download the report of the transactions done
+Transaction report of the card","To download the transaction report, follow these steps:
+1. Log in to the Zaggle mobile app.
+2. Go to the Zaggle Cards section.
+3. Select the Zaggle Prepaid Card.
+4. Click the Download button on the card details page.
+5. Select the time period (note: periods longer than 90 days are not allowed) and choose one of these options: Send over Email or Download.
+- If you select Send over Email, the statement PDF will be sent to your registered email ID.
+- If you select Download, the statement PDF will be downloaded to your device.
+6. The statement is secured by a unique password, which is a combination of the first four characters of your first name followed by the last four digits of your mobile number. Make sure not to include any special characters. For example, if your first name is Rohit and your last name is Kumar and your mobile number is 1234562376, your password will be ROHI2376."
+32,SAVE,"Can't see any option category to add the claim
+Can't select category in app
+Not able to choose the category while submitting claims
+No option to select category",I am sorry to hear that you are facing an issue while uploading claims. The categories and the limits are provided by HR. So Kindly check with your HR.
+33,SAVE,Card is loaded but balance is not reflected in the card,Please contact your HR for the same
+34,SAVE,Card is not active ?,"Follow these steps:-
+
+Activating your card requires completing your Min-KYC.
+
+After receiving the notification of your prepaid card issuance, log in using your registered mobile number.
+
+Complete Min-KYC by furnishing your OVD details.
+
+Confirm with the OTP received.
+
+Your Zaggle Card will then be activated. If you are still facing any issues, please contact our support team at care@zaggle.in or by calling at 18605001231, Monday to Saturday. 10 AM to 7.00 PM"
+35,Save,Check the balance of the Zinger cards,"To check your card balances, simply go to ""Zaggle Cards"" in the Zaggle Mobile App, select your card, and view the available balances.
+
+
+
+
+
+"
+36,SAVE,Do you have RBI License?,Zaggle works under the co-branded partner arrangement with Banks. These Banks meet  all the regulatory requirements for issuance of Prepaid Cards.
+37,Save,Do you have transfer to bank option from Expense wallet?,"The bank transfer option is available only on the  Yes Bank Zinger Card. To access it, complete Full KYC to avail bank transfer option."
+38,EDGE,Does credit laoded in the card has any validity?,The amount loaded in the card is valid till the card expiry
+39,Edge,Does the wearable need charging?,"No, it doesn't need charging."
+40,Save,Does Zaggle card work in cafeteria?,Zaggle card works on any POS device accepting Visa/Rupay cards. And provided that the merchant is registered under the food category  on the system.
+41,SAVE,Does Zaggle have Customer care support on Sundays?,"Please contact our support team at care@zaggle.in or by calling at 18605001231, Monday to Saturday. 10 AM to 7.00 PM.
+"
+42,EDGE,How to set pin for Kuber Card?,"Before setting your PIN, you need to activate or link your Zaggle Kuber Card if it is not already linked or activated.
+Incase  the card is not showing on the app, follow these steps:
+1. Go to the home page of the Zaggle Mobile App.
+2. Tap on ""Zaggle Cards"" at the bottom of the page.
+3. Select ""Activate/Link your Zaggle Card"".
+4. Enter your Card Number.
+5. Click on ""Proceed"" and enter the OTP sent to your registered mobile number. Then, click on ""Confirm"".
+6. Your card will be successfully added/ linked to your account.
+
+Once activation done, proceed to Set the POS PIN, follow these steps:
+1.  Go to the home page of the Zaggle Mobile App.
+2. Tap on ""Zaggle Cards"" at the bottom of the page.
+3. Select the Zaggle Kuber Card.
+4. Tap on the settings icon located at the top right corner.
+5. Choose the 'Set POS PIN' option.
+6. Enter the new POS PIN.
+7. Provide the OTP.
+8. Click on 'Confirm'.
+9. Your POS PIN will be successfully updated."
+43,Edge,For how much amount can ZAKEY be used at the Merchant Store?,"1.) You can use Zakey for tap-n-pay, upto maximum of Rs.5,000.
+2.) For transactions above Rs.5,000 you need to provide POS PIN after tapping the Zakey"
+44,Save,Fraud transaction from my card,"Apologies for any inconvenience caused. To assist you further, please provide the merchant name, transaction date and time, transaction details (such as error screenshots), and URN number or registered mobile number to the Zaggle customer care at emailid : care@zaggle.in or give a call on the customer care number(18605001231 Monday to Saturday. 10 AM to 7 PM) regarding the same . Thank you for your cooperation."
+45,Save,How can I activate my Zaggle card?,"To activate your Zaggle Card, please log in with your registered mobile number, complete the Min-KYC by providing your OVD details, and confirm with the OTP received. Your card will be activated once these steps are completed."
+46,Save,How can I change POS PIN?,"To change the POS PIN for your IndusInd Prepaid Card in the Zaggle Mobile App:
+
+1. Go to the home page.
+2. Tap ""Zaggle Cards"" at the bottom.
+3. Select your card.
+4. Tap the settings icon at the top right.
+5. Choose 'Set POS PIN.'
+6. Enter the new POS PIN and OTP.
+7. Click 'Confirm.'
+Your POS PIN will be successfully updated.
+
+
+To change the POS PIN for your Yes Bank Prepaid Card (Zinger Cards) in the Zaggle Mobile App:
+
+1. Go to the home page.
+2. Tap ""Zaggle Cards"" at the bottom.
+3. Select your card.
+4. Tap the settings icon at the top right.
+5. Choose 'Set POS PIN.'
+6. Enter the new POS PIN and expiry date in MM/YY format.
+7. Click 'SET PIN.'
+Your POS PIN will be successfully updated."
+47,Save,How can I check the balance on my ZAKEY?,"Here are the steps to view the balance on your ZAKEY in the Zaggle Mobile App:
+
+1. Navigate to the home page.
+2. Tap ""Zaggle Cards"" at the bottom.
+3. Select your ZAKEY.
+4. Authenticate by entering your MPIN.
+Your ZAKEY balance will be visible."
+48,SAVE,How can I disable my ECOM transactions?,"To disable the ECOM transaction channel:
+
+1. Go to Zaggle card settings.
+2. Select ""Manage Card Usage.""
+3. Choose the ECOM Transaction Channel.
+4. Deactivate it and click ""Update.""
+The ECOM transaction channel will be successfully disabled."
+49,SAVE,How can I enable my POS transactions?,"To set POS transaction limits:
+
+1. Go to Zaggle card settings.
+2. Select ""Manage Card Usage.""
+3. Choose the POS Transaction Channel.
+4. Enable it, set your limits, and click ""Update.""
+Your POS transaction limits will be successfully applied."
+50,EMS,How can I export my expenses?,"To export your expenses, login to zaggleems.com, go to expenses and click on the export to Excel button at the bottom of the page"
+51,Save,How can I load my Zinger (Zaggle) Card?,Zinger Card is a Corporate Card. Please contact your Corporate admin or HR for loading the card.
+52,Save,How can I lock my card?,"To temporarily lock your Zaggle Card:
+1. Open ""Zaggle Cards"" in the app.
+2. Select your card.
+3. Tap settings.
+4. Choose ""Lock Card.""
+5. Provide a reason and OTP.
+6. Confirm.
+Your card will be successfully locked.
+
+You can unlock the card in same section later."
+53,Save,How can I unblock my Card?,If you card is blocked it cannot be unblocked.  Please contact the Customer Care at 18605001231 from Mon – Sat (10AM – 7PM). Or write in to care@zaggle.in for card replacement. 
+54,EMS,How can I upload my receipts?,"You can upload your receipts both through the mobile application and web dashboard. The receipts can be attached to an existing expense, or a new expense can be created automatically by scanning a receipt through the smart scan in the mobile application."
+55,EMS,How can someone add and submit expenses on Zaggle EMS if they don't have a smartphone?,Zaggle EMS is a cloud-based application. You can create and submit expenses on both mobile applications and on desktop by logging into zaggleems.com.
+56,Edge,How do I activate my ZAKEY?,"Once you login to the Zaggle mobile app and complete your KYC process the Zakey( wearable) device will be activated automatically.
+To complete your Min KYC, follow these steps:
+1. Download Zaggle Mobile App, Login /Signup with your registred mobile no.
+2. Go to the home page of the Zaggle Mobile App.
+3. Tap on ""Zaggle Cards"" at the bottom of the page.
+4. A popup will appear prompting you to complete the Yes Bank Account Registration & Min KYC  process.
+5. Click on ""Yes Bank Account Registration and Min KYC"" and provide the necessary details  for the Min KYC process.
+6. Ensure to consent to providing your Aadhaar number for Min KYC by selecting the checkbox.
+7. Click on ""Submit"". Your Min KYC process will be successfully completed.
+8.  Your Zakey will then be added and displayed in the Zaggle Cards section."
+57,Save,How do I check when the card will expire?,"The card expiry date is visible on the front of the card or can be accessed via the Zaggle Mobile App. To view it:
+
+1. Navigate to ""Zaggle Cards.""
+2. Select your card.
+3. Authenticate with your MPIN.
+4. Voila! Your card details, including the expiry date, will be readily available at your fingertips.
+
+
+"
+58,EMS,How do I modify a submitted expense?,"To modify an expense from a submitted report, you have to first recall the report, then remove the expense and re-submit."
+59,SAVE,How does the taxation work for the remaining balance during the financial year end?,"Meal and gift balance can continue even after FY end, the rest of the benefits are taxed. Zaggle provides the claimed and unclaimed report for the corporate to tax the employee in March payroll"
+60,SAVE,How does Zaggle ensure data security?,"Zaggle is ISO 9001, 27001 certified, PCI DSS certified and SOC 2 compliant. It ensures data security by employing advanced encryption methods, adhering to stringent compliance standards, and partnering with trusted banks. Our robust security protocols protect user data and transactions, maintaining the highest level of privacy and integrity."
+61,SAVE,How I can pay driver salary?,"Once click on the Driver Salary feature under settings, User will land on Beneficiary Management: it shows Beneficiary details like Beneficiary Name, Acc No, IFSC code. Click on the Transfer Button and select the Pending Months then transfer the funds successfully to Beneficiary account."
+62,Edge,How is the Kuber card used?,The Kuber card is a prepaid Card that can be used at any VISA/Rupay merchant in India.This card will come preloaded with the amount gifted to you.
+63,EMS,"How many expenses can be added to my expense report?
+",There are no limits to the number of expenses in a number of reports. You can add as many expenses in a report as required.
+64,EMS,How to add mileage using Geolocation?,All users can add mileage using Geolocation from below path: End-User Dashboard -> Expenses -> Add Expense -> Mileage -> Geo location.
+65,EMS,How to add mileage using GPS tracking?,All users can add mileage using GPS tracking through mobile application from below path: Mobile Application -> Expense -> Add+ -> Mileage -> Geo location.
+66,EMS,How to add mileage using odometer reading?,All users can add mileage using odometer reading from below path: End-User Dashboard -> Expenses -> Add Expense -> Mileage -> Odometer Reading.
+67,Save,How to block card?,"To block your Zaggle Card permanently, go to ""Zaggle Cards"" in the app, select your card, tap the settings icon, choose ""Block Card,"" enter the reason and OTP, then confirm. Your card will be successfully blocked."
+68,SAVE,How to change email address,Please contact your Corporate HR for change in email address
+69,Save,How to change MPIN,"To change your MPIN:
+
+1. Navigate to ""Zaggle Cards"" in the Zaggle Mobile App.
+2. Tap the settings icon.
+3. Select ""Change MPIN.""
+4. Enter your old MPIN and new MPIN.
+5. Click ""Submit.""
+Your MPIN will be successfully updated."
+70,Edge,How to change the address pincode for the KYC,"1.)  You can update the pincode only until the Vendor is not mapped. you can click on Update Appointment on the Full KYC Biometric Status button on the Card section and update the details on your mobile app.
+2.) Once the KYC vendor is assigned, you can share the updated details directly to the agent of the KYC vendor once he contacts you to book the visit."
+71,SAVE,"How to check full kyc appointment status
+","Click on the Zaggle Card, then select the ""Full KYC"" button on the left side below the card to view your full KYC details."
+72,SAVE,"How to check if my card is valid or not ?
+I wanted to know if my card is still valid ?","The card expiry date is visible on the front of the card or can be accessed via the Zaggle Mobile App. To view it:
+
+1. Navigate to ""Zaggle Cards.""
+2. Select your card.
+3. Authenticate with your MPIN.
+4. Voila! Your card details, including the expiry date, will be readily available at your fingertips."
+73,SAVE,"How to check the status of approval of bills?
+Bill clearance status ?","To check your bill submission status, go to ""Zaggle Cards"" and click on ""Claims"" to view the status of your previously submitted claims."
+74,Propel,"How to check voucher status
+When will I recieve my vouchers ","To check the voucher status, you can follow these steps:
+1. Go to the home page of the Zaggle Mobile App.
+2. Tap on ""My Acounts"" at the bottom of the page.
+3. Click on 'My Orders'.
+4. Locate the specific order number associated with the order / voucher.
+5. Once you've found the order, you can check the status to see if the voucher has been confirmed or dispatched or cancelled.
+
+To know the delivery time for a voucher, you can view it from:
+1. You can find the tentative delivery days on the product description page when placing the order. 
+2. Additionally, the tentative delivery date is provided in the order confirmation email.
+3. Please note that delivery times may vary for each voucher. Some vouchers are delivered instantly, while others may take days to deliver. "
+75,PROPEL,How to check when the voucher will expire,"To check voucher code expiry from the Propel Web platform, please follow these steps:
+1.	Visit www.zagglepropel.com.
+2.	Login using your email ID or mobile number along with your password or OTP.
+3.	Click on the ""Login"" button.
+4.	Navigate to the ""My Orders"" section.
+5.	Verify your mobile number by entering the OTP. (Note: The OTP is triggered to the registered mobile number).
+6.	Upon successful verification, you will be redirected to the orders page.
+7.	Select the Order ID and expand it by clicking on ""+"" icon.
+8.	Check for the expiry of the voucher code in ""Valid Till"" column.
+
+
+To cancel an order from the Zaggle mobile app, follow these steps:
+1.	Login to the mobile app using OTP.
+2.	Go to the home page of the Zaggle Mobile App.
+3.	Tap on ""My Account"" at the bottom of the page.
+4.	Click on ""My Orders"".
+5.	Select the Order ID.
+6.    Select the brand name.
+7.	Check for the expiry of the voucher code which will be mentioned as ""Expires on: DD-MM-YYYY"""
+76,SAVE,How to close my zaggle account?,Please contact your HR for the same. 
+77,EDGE,What is virtual Zaggle card? How to use it,"A virtual Zaggle card is a digital version of a prepaid card provided by Zaggle. It offers the same functionality as a physical card but exists only in digital form which can be used for online purchases, subscriptions, and other digital transactions without needing a physical card.
+With a digital card provided you can use the same for online transaction using (card number, expiration date, and CVV) on an Indian e-commerce website in Indian rupees"
+78,Save,How to replace my Card in case I have lost the old card or the card has expired?,"Incase the card get's lost, permanently block your card, go to ""Zaggle Cards,"" select your card, and choose ""Card Settings,"" then ""Block Card."" Email care@zaggle.in with your URN and dispatch address; a replacement card will be sent, with applicable charges deducted."
+79,SAVE,How to replace my Card in case it is damaged,"Please contact our support team at care@zaggle.in or by calling at 18605001231, Monday to Saturday. 10 AM to 7.00 PM"
+80,EDGE,Where can I view the transactions done with my Zaggle Card?,"1. Go to the home page of the Zaggle Mobile App.
+2. Tap on ""Zaggle Cards"" at the bottom of the page.
+3. Select your Zaggle Card.
+4. Beneath the card details, you can view the transaction history of Zaggle Card."
+81,EDGE,How to update contact details for Kuber Card,"To update contact details for Kuber Card, please add the card on your mobile app. Once you activate the card, you will not be able to update the contact details on your card."
+82,Save,I forgot my MPIN,"If you've forgotten your MPIN, go to ""Zaggle Cards"" in the Zaggle Mobile App, tap the settings icon, select ""Forgot MPIN,"" answer the security question, and click ""Submit."" If you don't recall the answers, click ""Send MPIN by Email"" to receive it via your registered email address."
+83,Save,I have dispute in my transaction,"We apologize for any inconvenience caused. To assist you efficiently, please provide the merchant name, transaction date and time, transaction details (e.g., error screenshots), and URN number or registered mobile number to the Zaggle email ID :care@zaggle.in . Thank you for your cooperation."
+84,Save,I have lost my Zinger (Zaggle) Card. How can I prevent it from misuse?,You can secure your Zinger Card by temporarily locking your card under Card Settings--> Lock Card
+85,EMS,In case approver and admin want to obtain some additional information about the expenses from submitters.how can they do that?,They can add comments on an expense report. The submitters will get notified and can review and provide the information.
+86,EMS,Is it possible to add expenses in bulk?,"Yes, you can log in to zaggleems.com go to expenses, then to the Bulk Add Expenses tab. You can add multiple expenses at once from here."
+87,Save,My card is not loaded,"Please go to ""Zaggle Cards,"" choose your card, and verify the wallet balances. If there are no credits, notify your Corporate HR. If there are, enjoy your shopping!"
+88,Save,My online payment is not going through?,"Please contact our support team at care@zaggle.in or by calling at 18605001231 with the following details:
+Merchant Name, Transaction Date & Time, Transaction Details (such as error screenshot), and URN Number. The URN is available below the masked card number in the Zaggle App. We shall get back to you. "
+89,Propel,My order number is,"Do you mean to ask the last order number?
+If Yes--> Order number is XXXXXXXXX"
+90,SAVE,OTP is going on incorrect mobile number,Please verify your registered mobile number with your HR department for accurate account access.
+91,Propel,Propel Order cancellation,"To cancel an order from the Propel Web platform, please follow these steps:
+1.	Visit www.zagglepropel.com.
+2.	Login using your email ID or mobile number along with your password or OTP.
+3.	Click on the ""Login"" button.
+4.	Navigate to the ""My Orders"" section.
+5.	Verify your mobile number by entering the OTP. (Note: The OTP is triggered to the registered mobile number).
+6.	Upon successful verification, you will be redirected to the orders page.
+7.	Select the Order ID.
+8.	Go to the ""Action"" column.
+9.	Click on ""Cancel"" against the Order ID.
+10.	Note: Order Cancellation is only applicable when the order status is in ""Pending"".
+
+To cancel an order from the Zaggle mobile app, follow these steps:
+1.	Login to the mobile app using OTP.
+2.	Go to the home page of the Zaggle Mobile App.
+3.	Tap on ""My Account"" at the bottom of the page.
+4.	Click on ""My Orders"".
+5.	Select the Order ID.
+6.	Click on ""Cancel"" against the Order ID.
+7.	Note: Order Cancellation is only applicable when the order status is in ""Pending""."
+92,Propel,Redeem the zaggle badges,"It depends on the badges configuration set by your admin. If your admin has configured the badge to contribute to virtual points, then unfortunately, you won't be able to redeem these points directly. However, if it's configured differently, the points earned through badges will accumulate in your Propel account as redeemable points.  These redeemable points can be used to purchase e-vouchers, physical vouchers, and merchandise from the catalog, which may vary."
+93,Propel,Redeem the zaggle points,"To redeem the points from the Propel Web platform, please follow these steps:
+1.	Visit www.zagglepropel.com.
+2.	Login using your email ID or mobile number along with your password or OTP.
+3.	Click on ""Login"" button.
+4.	Navigate to the ""Redeem"" section.
+5.	Choose between e-voucher or physical voucher tabs. Select the desired category or search for brands on the search bar.
+6.	Choose the denomination for the brand and click on ""Add to Cart"".
+7.	Go to the cart.
+8.	Verify the denomination and quantity in your cart.
+9.	If applicable, add the delivery address for physical vouchers.
+10.	Select the checkbox for ""Zaggle Propel Card"".
+11.	Click on ""Place Order"".
+12.	Optional: If you have insufficient points, select ""Other Payment Mode: Debit Card/Credit Card/Net Banking"". Click on ""Place Order"". You will be redirected to the payment gateway. Enter your mobile number, followed by UPI, card, or net banking details and click on ""Pay Now"".
+13.	Upon successful order placement, a success message will be displayed.
+
+To redeem the points from the Zaggle mobile app, follow these steps:
+1.	Login to the mobile app using OTP.
+2.	Go to the home page of the Zaggle Mobile App.
+3.	Tap on ""Zaggle Cards"" at the bottom of the page.
+4.	Tap on ""Zaggle Propel Points"".
+5.	Click on ""Redeem"".
+15.	Filter by product type - E-Voucher or Physical Voucher and its corresponding category. Or search for the brand name on the search bar.
+6.	Tap on the product image.
+7.	Select the denomination for the corresponding brand and click on ""Add to Cart"".
+8.	Go to the cart.
+9.	Verify the denomination and quantity in your cart.
+10.	If applicable, add the delivery address for physical vouchers.
+11.	Click on ""View Details"" under Zaggle Pay Balance section.
+12.	Select the checkbox for ""Zaggle Propel Points"".
+13.	Click on ""Continue"".
+14.	Optional: If you have insufficient points, click on ""Other Payment Mode: Debit/Credit Card/Net Banking or Mobikwik"". Click on ""Continue"". If another payment mode is selected, you will be redirected to the payment gateway. Enter your UPI or card or Net Banking details.
+15.	Upon successful order placement, a success message will be displayed.
+"
+94,EMS,Should an expense always have a receipt attached to it?,No. You can create an expense without any receipt also. You will receive a warning to attach a receipt while saving or submitting such an expense if it is against the organization's policies.
+95,SAVE,"Transaction declined at POS ?
+Meal wallet is available still transaction was declined ?","There might be a server or MCC error at the vendor's end; please try again. If the issue persists with different merchants, please contact our support team at care@zaggle.in or by calling at 18605001231, Monday to Saturday. 10 AM to 7.00 PM"
+96,Save,Transaction failed but amount was debited from card,"
+In most cases, if the transaction has failed with the merchant, the money will be reversed to you automatically within 5-7 days and won't be billed to you.
+You can also contact the merchant's customer support or helpdesk to explain the situation and request a refund or resolution."
+97,SAVE,Unable to add the card,"The Zinger gets automatically shown in the Mobile App. Incase its is not showing, Please contact our support team at care@zaggle.in or by calling at 18605001231, Monday to Saturday. 10 AM to 7.00 PM"
+98,EMS,What happens if someone loses their receipt? Can they get it back from Zaggle EMS?,Yes. All the receipts uploaded to Zaggle EMS remain saved. You can just open the expense and download the receipt from there anytime.
+99,Edge,What happens if ZAKEY gets lost?,"1.) If Zakey is lost, please block your Zakey under Card Settings and raise a replacement request on the Zaggle Mobile app.
+2.) New Zakey will be dispatched to you on the provided dispatch address post debitted the replacement charges  You can also write an email to care@zaggle.in for a replacement. Replacement charges will be applicable."
+100,EMS,What is a non-reimbursable expense?,"An amount spent by an employee on behalf of the organization through the advances received from the organization is a non-reimbursable expense. No reimbursement is needed in this case, but approval is needed to check compliance with the policies."
+101,EMS,What is a policy violation?,A policy violation occurs when an expense violates the policy set by the organization such as the amount of an expense exceeding the provided limit or unavailability of the required documents.
+102,EMS,What is a Smart Scan?,Smart Scan is an option through which you can create expenses automatically by scanning the receipt with OCR using state of the art technology. It can be accessed through the Zaggle mobile application.
+103,Save,What is my wallet balance,"To check the balance of your  Card, go to ""Zaggle Cards"" in the Zaggle Mobile App, select your card, and view the wallet-wise balances."
+104,PROPEL,What is Zaggle Customer care number?,"Propel Zaggle Customer Care no. 18605003748 (Monday - Friday, 10:00 am - 7:00 pm) (Only on Business Days)
+Send us email: team@zaggle.in
+Chat with us: +91-836-772-3456 (Typical replay time: 1-2 Business Days) (Monday to Friday, 10 AM to 7 PM) (Only on Business Days)"
+105,SAVE,What is SAVE tax benefits?,"The Zaggle SAVE card is a versatile prepaid card that helps employees save on taxes by facilitating tax-free spending on meals, fuel, and communication expenses. It digitizes employee tax benefits, replacing food coupons, fuel cards, travel vouchers, and gift cards with a single, convenient card."
+106,Edge,What is the Kuber card?,"The Kuber card is a Corporate Prepaid Card that can be used at any VISA merchant in India. This card comes preloaded with the amount gifted to you.
+More Information:
+The KUBER gift card is widely accepted at more than 750,000 merchant partners across all categories such as supermarkets, hypermarkets, restaurants, fuel stations, jewelry stores, hotels, and all eCommerce sites."
+107,SAVE,"How to pay for fuel using zaggle card
+How can I pay for fuel through Zaggle",Ensure you have opted for the fuel wallet. You can then swipe your Zaggle card at any fuel station to complete the transaction.
+108,Save,What to do if I am facing any problem with transactions?,"Please verify your balance and ensure sufficient funds before initiating transactions. Also, ensure that POS/ECOM/ATM channels have appropriate limits enabled. For further assistance, contact us at 18605001231 or email care@zaggle.in."
+109,EMS,When does the smart scan fail?,"The smart scan may fail in the following cases: When the file format of the receipt is not supported. When the receipt does not contain sufficient data for the creation of the expense, or the receipt is faded. When a receipt is in an unsupported language. When more than one receipt scanned as a single image."
+110,SAVE,When will I get the refund of the failed transaction,"Please contact our support team at care@zaggle.in or by calling at 18605001231, Monday to Saturday. 10 AM to 7.00 PM"
+111,SAVE,"When will I receive my new card?
+When will my card be delivered ?
+Card Delivery Status ?
+Not recieved my card yet ?
+When the card will be delivered?
+I haven't received my physical card yet
+I have not received any card yet?
+Where is my Zaggle prepaid card
+Physical card status
+When will the card be dispatched ?
+","Cards are typically delivered within 1-2 weeks. If your card hasn't arrived, please check with your HR department."
+112,EMS,Where can I set general rules for categories?,General rules which are applicable to all the categories can be set by creating and editing policies and limits from the below path: Administrator Dashboard -> Admin -> Policies and Limits.
+113,EDGE,Which PIN to use where?,POS PIN is used for ATM or Point of Sale Transaction (POS machine) and IPIN(Internet Banking PIN) is for ECOM Transaction/online transaction.
+114,EMS,Why have some users not received the invitation email for joining the organization in Zaggle EMS?,"Please ask the users to check the spam, junk and promotions folders in their email. If some user has still not got the mail, the administrator can delete the user from the Employees section in the admin dashboard and add again."
+115,SAVE,"Zaggle card is not yet loaded with the amount ?
+Money is not credited yet in my zaggle card
+Why current balance is showing 0 ?
+Amount not loaded
+I have not received the monthly zaggle meal voucher credit
+My balance not yet credited
+Payment not uploaded to zaggle card
+Getting fund insufficient
+Zaggle card not getting recharge
+My balance is not yet updated ",Please check with your HR department 
+116,EMS,What is the purpose of the Zaggle EMS Dashboard?,"The Zaggle EMS Dashboard serves as the central hub for users to manage expenses, travel requests, card management, and reporting. It provides a quick overview of pending approvals, submitted reports, and recent financial activities."
+117,EMS,"What does ""Reports Pending Approval"" indicate?","""Reports Pending Approval"" shows the total number of expense reports submitted by the user that are currently awaiting approval from their designated approver(s)."
+118,EMS,"What information is shown in ""Reports Submitted""?","""Reports Submitted"" displays the total number of expense reports that have been submitted and successfully approved."
+119,EMS,How can I view detailed information about recent expenses?,"Under ""Recent Expenses,"" you will find a list of the most recent transactions made. Click on an expense to view more details like merchant name, amount, and the date of transaction."
+120,EMS,Where can I find reports I’ve recently submitted?,"""Recent Reports"" shows a list of your latest expense reports. Click ""View all"" to see a detailed list and check the status or details of each report."
+121,Save,How do I change my user profile details?,"To edit your profile, click on your name or the individual icon in the top right corner, then select ""Edit Profile."" From there, you can change details such as your name, email, and password."
+122,CX,What should I do if I need help using the system?,"If you need assistance, click on ""Need Help?"" You can choose to write to support, request a call, request a demo, or view FAQs for help on common issues."
+123,EMS,What are delegation features and how do they work?,"Delegation features allow you to assign someone else to manage your expenses or approvals on your behalf. You can delegate authority by selecting ""Delegation"" from your profile menu, then ""Add New Delegate"" and setting the permissions and duration of the delegation."
+124,Save,"What is the ""Category Wise Balances"" section?","This section displays the available balances categorised by type, such as travel, meals, or office supplies. It shows both quarterly and annual balances to help with budget tracking."
+125,EMS,Is there a mobile app for Zaggle EMS?,"Yes, Zaggle EMS has a mobile app available for both iOS and Android devices, which allows users to manage expenses on-the-go."
+126,EMS,How do I contact Zaggle EMS support?,"For support, you can email EMSsupport@zaggle.in or use the contact options available under the ""Need Help?"" section of the Dashboard."
+127,EMS,How do I filter expenses by their submission status?,"Navigate to the 'Filter By' dropdown on the Expenses page and select the desired status, such as Un-submitted, Reimbursed, Rejected, etc., to view expenses categorised by their current processing state."
+128,EMS,What types of expenses can I filter by in Zaggle EMS?,"You can filter expenses by All Expenses, Un-submitted, Reimbursed, Partially Reimbursed, Rejected, Pending Reimbursement, and Recalled."
+129,EMS,Can I customise what information is displayed in the expense list?,"Yes, click on the 'Manage Columns' button displayed as settings icon to select or deselect which columns (e.g., Date, Merchant, Category, Amount, Bill, Status) you want to display in the expense list."
+130,EMS,How do I add a new expense in Zaggle EMS?,"Click on '+ Add Expense' and enter the necessary details such as Transaction Date, Category, Merchant, Amount, and optionally attach the bill. Confirm the details and save or submit the expense."
+131,EMS,How do I add mileage to my expense report?,"Select the 'Add Mileage' option when adding an expense. Enter details such as Transaction Date, Distance, Vehicle Type, and Amount. You can manually enter the distance or use the odometer readings."
+132,EMS,What is the procedure to add a Per Diem expense?,"Choose the 'Per Diem' tab during expense creation, specify the Transaction Date, Start and End Period, City, and the Amount based on daily allowances."
+133,EMS,Can I attach multiple receipts to a single expense entry?,You can attach a maximum of 3 bills for each expense.
+134,EMS,How do I edit an existing expense?,"Find the expense in the list, click on it, and choose 'Edit'. Make the necessary changes and save or resubmit for approval."
+135,EMS,What should I do if an expense is rejected?,"Review the rejection reasons provided, correct any errors or add the required documentation, and resubmit the expense for approval."
+136,EMS,How can I delete an expense that is no longer needed?,"If your company policy allows, you can delete an expense by selecting it from the list and clicking on the 'Delete' option."
+137,EMS,Is there a way to recall a submitted expense?,"Yes, if the expense has not yet been processed or approved, you can recall it by selecting the 'Recall' option from the action menu of the expense."
+138,EMS,How do I search for a specific expense?,"Use the search bar at the top of the Expenses page to enter keywords related to the ID, Merchant, Category, or Report Name."
+139,EMS,"What is the purpose of sorting expenses, and how can I do it?","Sorting helps you organize expenses visually by criteria such as Date, Amount, or Status. Click on the column headers to sort the list accordingly."
+140,EMS,How do I use the Smart Scan feature for adding expenses?,"Click on 'Smart Scan', and upload the receipt. The system will automatically extract transaction details like date, merchant, and amount, filling them in the expense form."
+141,EMS,What happens if I submit an expense without a necessary receipt?,The expense may be flagged by the system or rejected by the approver. It's important to attach all required documents to avoid delays in processing.
+142,EMS,How are currency conversions handled in Zaggle EMS?,"If you incur expenses in a foreign currency, enter the amount and select the currency. The system will automatically convert it into the base currency based on the latest exchange rates."
+143,EMS,Can I add expenses in advance for a planned business trip?,"Yes, you can add projected expenses for upcoming trips. Ensure to update the actual amounts and attach receipts once the expenses are incurred."
+144,EMS,What is the process for handling partially reimbursed expenses?,"If an expense is partially reimbursed, the system will show the reimbursed amount and the remaining balance. You may need to submit additional documentation or a revised claim for the remaining amount."
+145,EMS,How do I handle tax-related information when adding an expense?,"When adding an expense, select the appropriate tax type from the dropdown menu. Provide tax details as per the receipts or as required by your company’s financial policies."
+146,EMS,How are expense reports created from the individual expenses listed?,"After adding expenses, group them into reports by selecting multiple expenses and choosing 'Add to Report'. Specify the report name and submit it for approval."
+147,EMS,What should I do if I need to update the payment method for an expense after submission?,"If the expense has not been processed yet, recall it, and update the payment method in the expense details before resubmitting."
+148,EMS,How can I export my expenses for accounting or tax purposes?,Use the 'Exports' option in the main menu to generate downloadable reports of your expenses in formats suitable for accounting or tax filings.
+149,EMS,Who can I contact for help if I encounter issues with the expense management system?,"You can use the 'Need Help?' feature to write to support, request a call, or request a demo for detailed guidance on using the system."
+150,EMS,How do I access the travel request section in Zaggle EMS?,Navigate to the 'Travel Request' section via the left-hand menu after logging into the Zaggle EMS platform.
+151,EMS,What types of travel requests can I make?,"You can submit travel requests for flights, hotel bookings, car rentals, and other miscellaneous travel needs."
+152,EMS,How do I add a new travel request?,"Click on 'Add' in the 'Travel Request' section, enter the necessary details about your travel, and save the request."
+153,EMS,Can I filter travel requests by status?,"Yes, use the 'Filter By' drop-down menu to filter requests by status such as 'Pending Close', 'Recalled', or 'Completed'."
+154,EMS,What should I include in a travel request?,"Include details such as travel name, start and end dates, destination, and purpose of the trip."
+155,EMS,How do I submit a flight reservation request?,"In the 'New Travel Request' form, select 'Flight Reservations', fill out the required fields, and submit your request."
+156,EMS,What information is required for hotel reservations?,"You need to specify the location, check-in and check-out dates, and any preferences for meals or seating if applicable."
+157,EMS,Can I save a travel request to complete later?,"Yes, you can save your travel request at any time and return to complete or submit it later."
+158,EMS,How are travel requests approved?,"After submission, travel requests undergo a review process based on your company’s policies. You will receive a status update once reviewed."
+159,EMS,How do I view the details of a submitted travel request?,Click on the specific travel request in the 'Travel Request' list to view detailed information.
+160,EMS,What does the 'Pending Close' status mean for a travel request?,Pending Close' indicates that the request has been processed but not yet finalized or closed in the system.
+161,EMS,How can I recall a travel request?,"If the request has a 'Recalled' status, you can open it and make necessary changes before resubmitting."
+162,EMS,What happens after a travel request is completed?,"Once completed, the request will be marked as 'Completed' and you will typically no longer be able to make changes."
+163,EMS,"How do I add multiple components to a travel request (e.g., flight and hotel)?","Within the travel request form, add each component separately by filling out the respective sections for flights, hotels, car rentals, etc."
+164,EMS,Can I specify preferences for flights and hotels?,"Yes, when filling out the flight and hotel sections, you can specify preferences such as meal type, seat preference, room type, etc."
+165,EMS,What is the purpose of the 'Business Purpose' field in a travel request?,"This field is used to describe the reason for the travel, which helps in the approval process and ensures compliance with company travel policies."
+166,EMS,How do I track the approval status of my travel request?,The current status of your request is displayed in the travel request list and is updated as it moves through the approval process.
+167,EMS,What should I do if my travel request is rejected?,"If rejected, review the feedback provided, make necessary adjustments, and resubmit the request."
+168,EMS,Can I delete a travel request?,"Depending on your company’s policy and the system settings, you may or may not be able to delete a request. Check with your system administrator."
+169,EMS,Can I edit a travel request after submission?,"This depends on your company's policy. If allowed, you can edit a request until it reaches a certain stage in the approval process."
+170,EMS,How do I make a travel request for multiple people?,Include details for all individuals in the travel request or create separate requests if required by your system.
+171,EMS,What details are required for car rentals in a travel request?,"Provide details like pick-up and drop-off locations, rental start and end dates, and any specific vehicle preferences."
+172,General,What is credit card integration?,Credit card integration allows users to link and use their credit cards directly within the platform for various transactions.
+173,General,Is my credit card information secure?,"Yes, all credit card information is encrypted and stored securely, complying with PCI DSS Standards."
+174,General,Can I use multiple credit cards?,"Yes, users can add multiple credit cards and select a default card for transactions."
+175,General,How do I set a default credit card?,"Go to ""My Credit Cards,"" select your preferred card, and click on ""Set as Default."""
+176,General,What types of credit cards are supported?,"We support all major credit cards, including Visa, MasterCard, American Express, and Discover."
+177,General,Can I remove a credit card from my account?,"Yes, you can remove a credit card by going to ""My Credit Cards"" and clicking ""Remove"" next to the card you wish to delete."
+178,General,Q65: What should I do if my credit card is declined?,"Check for input errors, ensure sufficient funds, or contact your bank for further details."
+179,General,Q66: How are refunds processed if I use a credit card?,Refunds are credited back to the original credit card used for the transaction.
+180,General,Q67: Can I edit my credit card details?,"You can update your credit card details, such as the expiration date and billing address, by selecting ""Edit"" next to the card."
+181,General,Q68: How do I view my credit card transactions?,"Transactions made with your credit cards can be viewed in the ""Transaction History"" section."
+182,General,Q69: Is there a fee for using credit card integration?,Zaggle does not charge any additional fees for using the credit card integration service.
+183,General,Q70: How do I report unauthorised transactions?,Immediately report any unauthorised transactions to customer support and your credit card issuer.
+184,General,Q71: Can I use my credit card for international transactions?,"Yes, international transactions are supported, subject to your credit card's terms and conditions."
+185,General,Q72: What is the transaction limit per credit card?,Transaction limits are subject to your credit card agreement and our platform's policies.
+186,General,Q73: Can I use credit cards for recurring payments?,"Yes, you can set up recurring payments using your saved credit cards."
+187,General,Q74: How quickly are transactions processed?,Credit card transactions are typically processed instantly but may vary based on the card issuer.
+188,General,Q75: How secure is the credit card verification process?,We use secure protocols for credit card verification to ensure your information is protected.
+189,General,Q76: What happens if I close my account?,All linked credit cards will be removed and cannot be recovered after account closure.
+190,General,Q77: Can I link corporate credit cards?,"Yes, corporate credit cards can be linked with the same process as personal cards."
+191,General,Q78: How do I know if my credit card is active on the platform?,"Active credit cards are listed in your account under ""Active Cards."""
+192,EMS,What is an Expense Report in Zaggle EMS?,"An Expense Report allows you to compile and submit multiple expenses for approval, typically related to non-travel activities."
+193,EMS,How do I access the Expense Report feature on Zaggle EMS?,"On the left-hand side menu of the Zaggle EMS homepage, click on 'Expense Reports'."
+194,EMS,How do I start a new Expense Report?,"Click on 'Add New Report' and provide the required details such as the report title, comments, and the duration of the expense."
+195,EMS,Can I add expenses that were previously unreported?,"Yes, to add unreported expenses, click on the 'Add Unreported Expense' option, and select the expenses you wish to add from the list displayed."
+196,EMS,What happens if I submit an expense report with out-of-policy expenses?,The system will display an error message. You will need to either edit or delete the non-compliant expense items before re-submitting the report.
+197,EMS,What is the 'Add Expense' function?,"This allows you to add new expenses directly to an existing report. Click 'Add Expense', and enter the expense details as required."
+198,EMS,How do I edit an expense in a report?,"Within the expense report, select the expense you wish to edit and make the necessary adjustments."
+199,EMS,What should I do if my expense report has been rejected?,"Review the feedback, correct any errors or out-of-policy expenses, and resubmit the report."
+200,EMS,How can I delete an expense from a report?,Select the expense you wish to remove and use the delete option provided within the report.
+201,EMS,What are the steps to submit an expense report for approval?,"After adding all necessary expenses and ensuring all entries comply with company policies, click on the 'Submit' button to send the report for managerial approval."
+202,EMS,How do I know if my expense report has been submitted successfully?,"Once submitted, the status of your report will change to 'Pending for RM approval'."
+203,EMS,What types of expenses can I report in a Non-Travel Expense Report?,"You can report various types of expenses such as office supplies, business meals, and local transport costs that comply with your company's policies."
+204,EMS,Is there a limit to the number of expenses I can include in one report?,"There is typically no system-imposed limit, but it's best to adhere to your company's policy regarding expense report submissions."
+205,EMS,How do I attach receipts to my expense report?,"For each expense entry, use the option to upload a digital copy of the relevant receipt."
+206,EMS,Can I save a draft of my expense report before submitting?,"Yes, you can save your expense report as a draft and continue adding expenses before final submission."
+207,EMS,What should I do if I encounter an error while saving an expense report?,"Check your internet connection, ensure all required fields are filled correctly, and try saving again."
+208,EMS,Who approves the expense reports I submit?,"Expense reports are typically approved by your Reporting Manager or the Finance department, depending on your company's specific workflow."
+209,EMS, Can I view the status of my submitted expense reports?,"Yes, the status of each report is visible in the 'Expense Reports' section of the EMS."
+210,EMS,What happens after my expense report is approved?,"Once approved, the finance department will process the reimbursements as per the company's payment cycle."
+211,EMS,How do I use filters to view specific expense reports?,"Use the filter options to sort and view expense reports based on their status, submission date, or other criteria."
+212,EMS,What details are required when adding a new expense to a report?,"You need to provide details such as the date, amount, category, and a brief description of the expense."
+213,EMS,Can I submit an expense report for expenses incurred on behalf of my team?,"Yes, provided you have the necessary permissions and it complies with your company's expense reporting policies."
+214,EMS,How can I ensure my expenses comply with company policy before submission?,Review your company's expense policy document regularly and ensure each expense meets the specified criteria and limits.
+215,EMS,What is the procedure to recall a submitted expense report?,"If the report has not yet been approved, you may have the option to recall it for editing. This option depends on your system's configuration."
+216,EMS,Can I add notes or comments to my expense report for the approver?,"Yes, you can add comments or notes to provide additional context or explanations related to the expenses submitted."
+217,EMS,What is the purpose of the 'Exports' section in ZaggleEMS?,"The 'Exports' section allows users to download various types of reports, such as travel requests or end user reports, that have been generated within the system."
+218,EMS,How can I access the 'Exports' section in ZaggleEMS?,Navigate to the sidebar menu and click on 'Exports' to access this feature.
+219,EMS,What types of reports can I export from ZaggleEMS?,"You can export End User Report Lists, Travel Request Reports, and other customized reports based on your access and system configuration."
+220,EMS,How do I export a report from ZaggleEMS?,"Choose the report type from the dropdown menu, set any necessary filters such as date range, and then click the download link provided."
+221,EMS,Can I export reports for specific dates?,"Yes, you can filter reports by entering a start and end date before executing the export."
+222,EMS,What file formats are available for exporting reports?,"Reports are typically available in formats like PDF, Excel, or CSV, depending on the system setup."
+223,EMS,How do I know the status of a report export?,"The 'Status' column in the exports list will indicate whether the report is queued, in progress, completed, or failed."
+224,EMS,What should I do if my export fails?,"Check for any error messages and try exporting again, or contact your system administrator for support."
+225,EMS,How long does it take to generate an export?,The time taken can vary depending on the size of the data and the current load on the system.
+226,EMS,Is there a limit to the number of exports I can perform?,"Limits, if any, would be based on your system settings and organizational policies."
+227,EMS,How do I download a completed report?,Click the 'Click here to Download' link in the 'File' column next to the report that has been marked as completed.
+228,EMS,How can I filter the types of reports I see in the 'Exports' section?,Use the 'Search by File Type' dropdown to filter the reports displayed based on the report type.
+229,EMS,What is a Cash Advance?,A cash advance is a facility provided to employees to cover expenses for upcoming trips or company-related expenditures before they occur.
+230,EMS,How do I request a cash advance in Zaggle EMS?,"Navigate to ""Advance Payment"" on the left-hand sidebar menu, then click on ""Request Advance"" on the right-hand side tab."
+231,EMS,What details are required to request a cash advance?,"You need to fill in details such as Purpose/Title, Amount, Reference, the payment method, and any additional comments."
+232,EMS,Can I save a cash advance request without submitting it?,"Yes, after filling out the cash advance request form, you can choose to save it without submitting it by clicking the ""Save"" button."
+233,EMS,How do I submit a cash advance request for approval?,"After completing the cash advance request form, click ""Submit"" to send it for approval."
+234,EMS,What happens after I submit a cash advance request?,"The request will show as ""Pending for approval"" in the approval request list view section."
+235,EMS,Who approves the cash advance requests?,Cash advance requests are approved by the Reporting Manager/s or as defined by the policy admin of your organization.
+236,EMS,How can I check the status of my cash advance request?,"The status can be viewed in the 'Advance Payment' section, where each request's status is displayed next to it."
+237,EMS,What does the 'Approved' status mean on my cash advance request?,Approved' status indicates that your cash advance request has been reviewed and accepted by the approval authorities.
+238,EMS,What should I do if my cash advance request is rejected?,You should contact your finance team or supervisor to understand the reason for rejection and the next steps.
+239,EMS,How do I link a cash advance to an expense report?,"Go to the 'Expense Reports' section, save your report, then use the 'Advance Payment' tab within the report to link the cash advance."
+240,EMS,Can I attach multiple cash advances to a single expense report?,"Yes, multiple advances can be selected and linked to a single expense report."
+241,EMS,How is the total of an expense report adjusted after adding cash advances?,The total claimed amount in the expense report will be adjusted to account for the advance amounts applied.
+242,EMS,Can I un-link a cash advance from an expense report?,"Yes, before final submission, you can remove a linked cash advance by revisiting the 'Advance Payment' tab."
+243,EMS,What happens if I don't use all of my cash advance?,Unspent cash advances should be reported and returned according to your organization’s financial policies.
+244,EMS,Is there a deadline to report expenses against a cash advance?,"Yes, generally there are policy-defined timelines within which you must report expenses against advances."
+245,EMS,What types of expenses can be covered by a cash advance?,"This depends on your organization’s policy but generally includes travel, lodging, meals, and other business-related expenses."
+246,EMS,How do I download a report of my cash advances?,You can download reports from the 'Exports' section in the EMS by selecting the appropriate report type.
+247,EMS,What should I do if there is an error in my cash advance request?,"Edit the request if possible, or contact your finance team for assistance."
+248,EMS,Can I cancel a pending cash advance request?,"If the system allows, you can cancel it directly from the platform, or you might need to contact your finance team."
+249,EMS,How do I update a previously submitted cash advance request?,"Depending on your organization's settings, you may need to request cancellation of the submission and submit a new one."
+250,EMS,What documentation is required to request a cash advance?,"Typically, receipts or quotes of planned expenses are required."
+251,EMS,How can I ensure my cash advance is processed quickly?,Submit all required information accurately and follow up with your finance team regularly.
+252,EMS,What is the Advance Approval Workflow?,"It's a feature allowing companies to design workflows tailored to their needs, specifically for managing advance payments through an administrative interface."
+253,EMS,Who can configure the Advance Approval Workflow?,The EMS Admin has the capability to configure and manage the workflow.
+254,EMS,Can I assign different workflows for different company policies?,"Yes, workflows can be assigned to different policies, allowing for flexibility across various types of expense users."
+255,EMS,What happens if a condition for a workflow rule is not met?,"If the condition is not met, the workflow follows the default path set in the workflow configuration."
+256,EMS,How do I add a new rule to a workflow step?,Rules can be added by selecting the respective workflow step and defining the condition using the condition editor.
+257,EMS,Can custom fields be included in the workflow conditions?,"Yes, custom fields relevant to the company's operations can be included in the conditions for workflow rules."
+258,EMS,What is the default approval workflow for expenses in Zaggle EMS?,"The default approval workflow has three levels: Level 1 is the employee, Level 2 is the Reporting Manager, and Level 3 is the EMS Admin. This workflow is configurable to suit company policy."
+259,EMS,How can I change the approval workflow for expenses?,"You can configure the approval workflow by navigating to the 'Expense Preferences' section under Admin Configurations and setting up each level as needed, keeping the employee as L1 and the EMS Admin with Can reimburse access as the last level."
+260,EMS,Where do I update our business information like company name and registration number?,Update your business information under the 'Business Information' tab in Admin Configurations. You can also upload company logos and other documents here.
+261,EMS,What are the requirements for uploading a company logo?,The logo should be a maximum of 150px in width and 60px in height.
+262,EMS,How can I add or manage expense categories in Zaggle EMS?,"Go to the 'Categories' section under Admin Configurations to add, edit, delete, or enable/disable categories. Bulk upload is also available for managing multiple categories."
+263,EMS,"What is the function of the ""+"" sign in the categories section?","The ""+"" sign is used to view and manage sub-categories associated with a main category."
+264,EMS,How do I export all existing categories?,Use the 'Export' tab in the categories section to download all current categories.
+265,EMS,What types of data fields can I add to Zaggle EMS forms?,"You can add new fields to employee master data forms, expense forms, and advance forms. Fields can be marked as mandatory and included in PDF downloads."
+266,EMS,How do I manage employee details and cards in Zaggle EMS?,"Use the 'Employees' tab under Admin Configurations to add, update, or deactivate employees. The 'Employee with cards' tab is specifically for managing employees who have been issued company cards."
+267,EMS,How is the mileage rate set in Zaggle EMS?,Navigate to the 'Mileage Rate' section under Admin Configurations to enable mileage tracking and set rates by vehicle type.
+268,EMS,What is the purpose of the 'Merchants' tab under Admin Configurations?,"This tab allows you to add and manage a list of approved merchants for expense reporting, enhancing the expense filing process for users."
+269,EMS,How do I set up per diem rates in Zaggle EMS?,"Under the 'Per diem' section, you can set rates based on time bands, job titles, and locations. Rates can be defined for specific durations and adjusted as per the company's travel policy."
+270,EMS,Can I manage multiple entities under one Zaggle EMS account?,"Yes, use the 'Manage Organisation' section to add and manage multiple entities, and switch between them using the dropdown options."
+271,EMS,How are roles and permissions managed in Zaggle EMS?,"Roles like Accounts, Finance, HR, etc., can be created and assigned specific permissions under the 'Roles' section in Admin Configurations."
+272,EMS,What are the capabilities of the 'Policies & Limits' section?,"This section allows you to set and manage expense policies, including limits based on employee grade/title, receipt requirements, and frequency limits for specific expense categories."
+273,EMS,How do I add a new organization in the system?,"Click on ""Add new organisation"" in the Manage Organisations section to start the process of adding a new entity."
+274,EMS,How do I set specific policies for different categories?,"Navigate to the 'Manage Categories' tab in the 'Policies & Limits' section to set specific rules for each category, including enabling or disabling them based on the employee's title and grade."
+275,EMS,What should I do if a category needs to be adjusted or removed?,Use the 'Edit' or 'Delete' options in the Categories section to make necessary adjustments or remove a category from the system.
+276,EMS,How can I ensure a data field is included in PDF reports?,"While adding or editing a data field, make sure to check the 'View in PDF' option to include it in PDF downloads."
+277,EMS,Can I restrict certain categories from being clubbed with others in expense reports?,"Yes, when adding or editing a category, you can set restrictions to prevent it from being clubbed with other categories in expense reports."
+278,EMS,What happens if I need to change the data type of a field after creation?,"Once created, the field type and data type of a data field cannot be changed. You would need to create a new field if a different type is required."
+279,EMS,How do I handle KYC and other document uploads for employees?,Use the 'Documents' tab under the Employees section to manage KYC and other necessary employee documents.
+280,Save,What if an employee with a card leaves the company?,"In the 'Employees with cards' section, you can deactivate or delete an employee's record when they leave the company."
+281,EMS,How do I add a new field to an existing form in Zaggle EMS?,"Go to the 'Data Fields' section, select 'Add new', choose the appropriate form (expense, advance, employee master), and specify the field details."
+282,EMS,How do I customize the approval matrix for different departments within the company?,"In the 'Approval Matrix' section, you can create and customize approval flows specific to departments by assigning department heads and setting sequential approval levels as required."
+283,EMS,What are the implications of deactivating an expense category?,Deactivating an expense category prevents it from being selected in new expense reports but does not affect reports where it has previously been used.
+284,EMS,How can I view changes made to the admin settings?,"The 'Audit Trail' or 'Change Log' feature in the Admin Settings allows you to view all changes made, including who made the change and when, providing full transparency and accountability."
+285,EMS,Is it possible to set up automatic reminders for approvals?,"Yes, you can configure automatic reminders from the 'Reminders' section to prompt approvers to review pending approvals within a stipulated timeframe."
+286,EMS,How do I configure tax settings for different categories?,"Under 'Tax Settings' in the Categories section, you can define applicable taxes for each expense category, ensuring accurate tax calculations and compliance."
+287,EMS,What to do if an admin cannot see certain settings or features?,Ensure the admin's role has the appropriate permissions enabled. Check the 'Roles' configuration to adjust permissions or assign a role with higher access privileges.
+288,EMS,How do I restore a mistakenly deleted category?,"If a category is accidentally deleted, it may need to be manually recreated. Check if there is a 'Recycle Bin' or 'Restore' option available; if not, contact support for possible recovery options."
+289,EMS,Can I restrict specific IP addresses or devices for admin access?,"Yes, under the 'Security Settings' you can specify allowed IP addresses or registered devices that can access the admin panel, enhancing security."
+290,EMS,How are currency settings managed for international expenses?,"In the 'Currency Management' section, admins can add and manage multiple currencies along with conversion rates to facilitate international expense reporting."
+291,EMS,How do I update the fiscal year settings in the system?,Navigate to the 'Fiscal Year' settings in the system configurations to update the start and end dates as per your organization’s financial year.
+292,EMS,What steps should be taken if the system fails to update an admin setting?,"Verify internet connectivity first, then check if the system permissions allow the changes. If issues persist, clear cache or contact system support."
+293,EMS,How to handle discrepancies in expense reports from the admin side?,"Use the 'Reports Audit' feature to review and adjust discrepancies in expense reports, ensuring accuracy and compliance with company policies."
+294,EMS,What is the best way to introduce new expense policies company-wide?,"After updating policies in the 'Policies & Limits' section, communicate changes via the internal newsletter, email, or during a company meeting to ensure all employees are informed."
+295,EMS,Can the admin extract a comprehensive report of all expenses within a specific period?,"Yes, use the 'Comprehensive Expense Report' feature to filter and download detailed reports for any specific timeframe."
+296,EMS,How to manage emergency changes in company policies or settings?,"For immediate changes, use the 'Emergency Update' feature which allows admins to implement critical updates instantly, pending a review for later adjustments if needed."
+297,EMS,What happens to our data in case Zaggle’s system goes down?,Be rest assured. Your data is safe with us. All your data is saved very securely on AWS servers with an appropriate level of redundancy to avoid any data loss.
+298,EMS,How do I change the primary email address in my Zaggle EMS Account?,You will have to contact your organization's EMS admin to change your email address.

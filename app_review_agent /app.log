@@ -1,0 +1,35 @@
+2025-04-11 23:04:37,365 - DEBUG - Flask app instance created.
+2025-04-11 23:04:37,365 - INFO - Starting Flask app in main block.
+2025-04-11 23:04:37,365 - INFO - Calling app.run()
+2025-04-11 23:04:55,763 - DEBUG - Flask app instance created.
+2025-04-11 23:04:55,763 - INFO - Starting Flask app in main block.
+2025-04-11 23:04:55,763 - INFO - Calling app.run()
+2025-04-11 23:05:19,687 - DEBUG - Flask app instance created.
+2025-04-11 23:05:19,688 - INFO - Starting Flask app in main block.
+2025-04-11 23:05:19,688 - INFO - Calling app.run()
+2025-04-11 23:05:32,363 - DEBUG - Flask app instance created.
+2025-04-11 23:05:32,363 - INFO - Starting Flask app in main block.
+2025-04-11 23:05:32,363 - INFO - Calling app.run()
+2025-04-11 23:06:01,435 - DEBUG - Flask app instance created.
+2025-04-11 23:06:01,436 - INFO - Starting Flask app in main block.
+2025-04-11 23:06:01,436 - INFO - Calling app.run()
+2025-04-11 23:06:47,256 - DEBUG - Flask app instance created.
+2025-04-11 23:06:47,256 - INFO - Starting Flask app in main block.
+2025-04-11 23:06:47,256 - INFO - Calling app.run()
+2025-04-11 23:08:09,289 - DEBUG - Flask app instance created.
+2025-04-11 23:08:09,289 - INFO - Starting Flask app in main block.
+2025-04-11 23:08:09,289 - INFO - Calling app.run()
+2025-04-11 23:08:25,169 - DEBUG - Flask app instance created.
+2025-04-11 23:08:25,169 - INFO - Starting Flask app in main block.
+2025-04-11 23:08:25,169 - INFO - Calling app.run()
+2025-04-11 23:08:26,893 - DEBUG - Flask app instance created.
+2025-04-11 23:08:26,894 - INFO - Starting Flask app in main block.
+2025-04-11 23:08:26,894 - INFO - Calling app.run()
+2025-04-11 23:11:00,908 - INFO - FAISS index loaded at app startup.
+2025-04-11 23:11:06,682 - INFO - FAISS index loaded at app startup.
+2025-04-11 23:15:00,889 - INFO - FAISS index loaded at app startup.
+2025-04-11 23:15:21,050 - INFO - FAISS index loaded at app startup.
+2025-04-11 23:15:26,892 - INFO - FAISS index loaded at app startup.
+2025-04-11 23:15:28,435 - DEBUG - Entering login_required for function: index
+2025-04-11 23:15:28,435 - DEBUG - User is logged in, proceeding.
+2025-04-11 23:15:28,435 - DEBUG - Entering / route (index)
