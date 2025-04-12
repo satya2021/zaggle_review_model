@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Review Analysis - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <!-- Settings Panel -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-sliders"></i> Response Settings
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Empathy Level Control -->
+                <div class="mb-4">
+                    <label class="form-label d-flex justify-content-between">
+                        Empathy Level
+                        <span class="badge bg-primary" id="empathyLevelBadge">Balanced</span>
+                    </label>
+                    <div class="d-flex gap-2 mb-2">
+                        <input type="range" class="form-range" id="empathyLevel" 
+                               min="1" max="5" value="3">
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Professional</span>
+                        <span>Balanced</span>
+                        <span>Highly Empathetic</span>
+                    </div>
+                </div>
+
+                <!-- Response Style Controls -->
+                <div class="mb-4">
+                    <label class="form-label">Response Style</label>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includePersonalExperience">
+                            <label class="form-check-label" for="includePersonalExperience">
+                                Include Personal Experience
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeExamples">
+                            <label class="form-check-label" for="includeExamples">
+                                Include Examples
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeMetaphors">
+                            <label class="form-check-label" for="includeMetaphors">
+                                Use Metaphors
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Creativity Settings -->
+                <div class="mb-4">
+                    <label class="form-label d-flex justify-content-between">
+                        Response Creativity
+                        <span class="badge bg-info" id="creativityLevelBadge">Balanced</span>
+                    </label>
+                    <div class="d-flex gap-2 mb-2">
+                        <input type="range" class="form-range" id="creativityLevel" 
+                               min="1" max="5" value="3">
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Conservative</span>
+                        <span>Balanced</span>
+                        <span>Creative</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Input Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Review Analysis</h4>
+            </div>
+            <div class="card-body">
+                <form id="reviewForm">
+                    <div class="mb-3">
+                        <label for="reviewText" class="form-label">Enter Review Text</label>
+                        <textarea class="form-control" id="reviewText" rows="5" required></textarea>
+                    </div>
+                    <div class="button-container">
+                        <button id="generateButton" type="button" class="btn btn-primary me-2" onclick="processReview()">
+                            <i class="bi bi-magic"></i> Generate Response
+                        </button>
+                        <button id="clearButton" type="button" class="btn btn-secondary" onclick="clearForm()">
+                            <i class="bi bi-trash"></i> Clear Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sentiment Section -->
+        <div id="sentimentContainer" class="card mb-4" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0">Review Sentiment</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="sentiment-label mb-2">
+                            Label: <span id="sentimentLabel" class="badge"></span>
+                        </div>
+                        <div class="sentiment-score mb-2">
+                            Score: <span id="sentimentScore"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="sentiment-aspects">
+                            <h6>Key Aspects:</h6>
+                            <p id="sentimentAspects" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Preview -->
+        <div id="responseContainer" class="card mb-4" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Generated Response</h5>
+                <div class="response-controls">
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="regenerateResponse()">
+                        <i class="bi bi-arrow-clockwise"></i> Regenerate
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="copyResponse()">
+                        <i class="bi bi-clipboard"></i> Copy
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="responseContent" class="response-text"></div>
+            </div>
+        </div>
+
+        <!-- Add this after the response container -->
+        <div id="feedbackContainer" class="card mb-4" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-star"></i> Response Feedback
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">How helpful was this response?</label>
+                    <div class="rating-container d-flex gap-2">
+                        <button class="btn btn-outline-primary" onclick="rateResponse(1)">1</button>
+                        <button class="btn btn-outline-primary" onclick="rateResponse(2)">2</button>
+                        <button class="btn btn-outline-primary" onclick="rateResponse(3)">3</button>
+                        <button class="btn btn-outline-primary" onclick="rateResponse(4)">4</button>
+                        <button class="btn btn-outline-primary" onclick="rateResponse(5)">5</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Rate the empathy level:</label>
+                    <div class="d-flex gap-2 mb-2">
+                        <input type="range" class="form-range" id="empathyScore" 
+                               min="1" max="5" value="3">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Rate the relevance:</label>
+                    <div class="d-flex gap-2 mb-2">
+                        <input type="range" class="form-range" id="relevanceScore" 
+                               min="1" max="5" value="3">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="feedbackComments" class="form-label">Additional Comments:</label>
+                    <textarea class="form-control" id="feedbackComments" rows="2"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-success" onclick="submitFeedback(true)">
+                        <i class="bi bi-hand-thumbs-up"></i> Good Response
+                    </button>
+                    <button class="btn btn-danger" onclick="submitFeedback(false)">
+                        <i class="bi bi-hand-thumbs-down"></i> Needs Improvement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/review.js') }}"></script>
+{% endblock %}

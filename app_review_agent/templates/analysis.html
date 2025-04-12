@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Review Analysis - Detailed Analysis{% endblock %}
+
+{% block content %}
+<div class="analysis-sections">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Detailed Analysis</h4>
+        <div class="analysis-controls">
+            <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="expandAllAnalysis()">
+                <i class="bi bi-chevron-double-down"></i> Expand All
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="collapseAllAnalysis()">
+                <i class="bi bi-chevron-double-up"></i> Collapse All
+            </button>
+        </div>
+    </div>
+
+    <div class="accordion" id="analysisAccordion">
+        <!-- Analysis sections -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+{% endblock %} 

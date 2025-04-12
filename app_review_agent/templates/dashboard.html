@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Review Analysis - Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row">
+        <!-- Statistics Cards -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Reviews</h5>
+                    <h2 id="totalReviews">0</h2>
+                </div>
+            </div>
+        </div>
+        <!-- Add more stat cards -->
+    </div>
+
+    <!-- Charts and Graphs -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Sentiment Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="sentimentChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Add more charts -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %} 

@@ -1,0 +1,101 @@
+.form-range::-webkit-slider-thumb {
+    background: #0d6efd;
+}
+
+.form-range::-moz-range-thumb {
+    background: #0d6efd;
+}
+
+.response-text {
+    white-space: pre-wrap;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.tone-indicator {
+    margin-bottom: 0.5rem;
+}
+
+.tone-label {
+    display: inline-block;
+    width: 100px;
+    font-size: 0.9rem;
+}
+
+.key-point {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.rating-container button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+    line-height: 40px;
+    text-align: center;
+}
+
+.rating-container button:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}
+
+#feedbackContainer {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sentiment-analysis {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.analysis-metrics .metric-item {
+    margin-bottom: 0.5rem;
+}
+
+.analysis-metrics label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.key-points li, .issues li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.key-points i, .issues i {
+    position: absolute;
+    left: 0;
+    top: 0.25rem;
+}
+
+.issues i {
+    color: #dc3545;
+} 
