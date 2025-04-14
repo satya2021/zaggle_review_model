@@ -9,8 +9,9 @@ let responseSettings = {
     includeMetaphors: false
 };
 
-let currentReview = null;
-let currentResponse = null;
+let currentReview = '';
+let currentResponse = '';
+let currentReviewId = null;
 
 function processReview() {
     const reviewText = document.getElementById('reviewText').value.trim();
@@ -36,19 +37,81 @@ function processReview() {
             settings: responseSettings
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
-        updateResponseUI(data);
-        showAlert('Response generated successfully!', 'success');
+        console.log("Initial response data:", data);
+        if (data.status === 'error') {
+            throw new Error(data.error || data.message);
+        }
+        if (data.task_id) {
+            pollTaskStatus(data.task_id, generateButton, originalButtonText);
+        } else {
+            updateResponseUI(data);
+            showAlert('Response generated successfully!', 'success');
+            generateButton.disabled = false;
+            generateButton.innerHTML = originalButtonText;
+        }
     })
     .catch(error => {
         console.error('Error:', error);
-        showAlert('Error generating response', 'danger');
-    })
-    .finally(() => {
+        showAlert(`Error generating response: ${error.message}`, 'danger');
         generateButton.disabled = false;
         generateButton.innerHTML = originalButtonText;
     });
+}
+
+function pollTaskStatus(taskId, generateButton, originalButtonText) {
+    const pollInterval = setInterval(() => {
+        fetch(`/task_status/${taskId}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Task status:", data);
+                if (data.status === 'SUCCESS') {
+                    clearInterval(pollInterval);
+                    updateResponseUI(data.result);
+                    showAlert('Response generated successfully!', 'success');
+                    generateButton.disabled = false;
+                    generateButton.innerHTML = originalButtonText;
+                } else if (data.status === 'FAILURE' || data.status === 'error') {
+                    clearInterval(pollInterval);
+                    throw new Error(data.error || data.message || 'Task failed');
+                } else if (data.status === 'PENDING') {
+                    // Continue polling
+                    console.log("Task still processing...");
+                }
+            })
+            .catch(error => {
+                clearInterval(pollInterval);
+                console.error('Error polling task status:', error);
+                showAlert(`Error generating response: ${error.message}`, 'danger');
+                generateButton.disabled = false;
+                generateButton.innerHTML = originalButtonText;
+            });
+    }, 1000); // Poll every second
+
+    // Stop polling after 30 seconds
+    setTimeout(() => {
+        clearInterval(pollInterval);
+        if (generateButton.disabled) {
+            generateButton.disabled = false;
+            generateButton.innerHTML = originalButtonText;
+            showAlert('Response generation timed out. Please try again.', 'warning');
+        }
+    }, 30000);
 }
 
 function updateSentimentSection(sentiment) {
@@ -58,20 +121,38 @@ function updateSentimentSection(sentiment) {
     const score = document.getElementById('sentimentScore');
     const aspects = document.getElementById('sentimentAspects');
 
-    // Update sentiment label with appropriate color
+    // Update sentiment label with new styling
     label.textContent = sentiment.label;
-    label.className = 'badge ' + getSentimentBadgeClass(sentiment.label);
+    label.className = getSentimentBadgeClass(sentiment.label);
 
-    // Update score
-    score.textContent = (sentiment.score * 100).toFixed(1) + '%';
+    // Create score display with colored indicator
+    const scorePercentage = (sentiment.score * 100).toFixed(1);
+    const scoreColor = getScoreColor(sentiment.score);
+    score.innerHTML = `
+        <div class="d-flex align-items-center">
+            <div class="progress flex-grow-1" style="height: 10px;">
+                <div class="progress-bar" role="progressbar" 
+                     style="width: ${scorePercentage}%; background-color: ${scoreColor};"
+                     aria-valuenow="${scorePercentage}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                </div>
+            </div>
+            <span class="ms-2" style="color: ${scoreColor};">${scorePercentage}%</span>
+        </div>
+    `;
 
-    // Update aspects
-    if (sentiment.aspects && sentiment.aspects.length > 0) {
-        aspects.innerHTML = sentiment.aspects.map(aspect => 
-            `<span class="badge bg-secondary me-2">${aspect}</span>`
-        ).join('');
-    } else {
-        aspects.innerHTML = '<em>No specific aspects identified</em>';
+    // Update aspects with new styling
+    if (sentiment.issues) {
+        const issuesHtml = Object.entries(sentiment.issues)
+            .filter(([_, hasIssue]) => hasIssue)
+            .map(([issue, _]) => `
+                <span class="badge sentiment-badge sentiment-negative me-2">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    ${issue.charAt(0).toUpperCase() + issue.slice(1)}
+                </span>
+            `).join('');
+        aspects.innerHTML = issuesHtml || '<em>No issues detected</em>';
     }
 }
 
@@ -110,32 +191,43 @@ function showAlert(message, type) {
     const alertContainer = document.getElementById('alertContainer');
     if (!alertContainer) return;
 
-    const alertId = 'alert-' + Date.now();
-    const alertHtml = `
-        <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-    alertContainer.innerHTML = alertHtml;
+    
+    alertContainer.appendChild(alert);
 
     // Auto-dismiss after 5 seconds
     setTimeout(() => {
-        const alertElement = document.getElementById(alertId);
-        if (alertElement) {
-            alertElement.remove();
-        }
+        alert.classList.remove('show');
+        setTimeout(() => alert.remove(), 150);
     }, 5000);
 }
 
 function getSentimentBadgeClass(sentiment) {
-    const classes = {
-        'positive': 'bg-success',
-        'negative': 'bg-danger',
-        'neutral': 'bg-secondary',
-        'mixed': 'bg-warning'
+    if (!sentiment) return 'sentiment-badge sentiment-neutral';
+    
+    const sentimentMap = {
+        'very positive': 'sentiment-very-positive',
+        'positive': 'sentiment-positive',
+        'neutral': 'sentiment-neutral',
+        'negative': 'sentiment-negative',
+        'very negative': 'sentiment-very-negative'
     };
-    return classes[sentiment?.toLowerCase()] || 'bg-secondary';
+    
+    return `sentiment-badge ${sentimentMap[sentiment.toLowerCase()] || 'sentiment-neutral'}`;
+}
+
+function getScoreColor(score) {
+    // Color gradient from negative (red) to positive (green)
+    if (score <= 0.2) return '#c0392b'; // Very negative
+    if (score <= 0.4) return '#e74c3c'; // Negative
+    if (score <= 0.6) return '#7f8c8d'; // Neutral
+    if (score <= 0.8) return '#27ae60'; // Positive
+    return '#2ecc71'; // Very positive
 }
 
 function escapeHtml(unsafe) {
@@ -148,150 +240,191 @@ function escapeHtml(unsafe) {
 }
 
 function updateResponseUI(data) {
+    console.log("Updating UI with data:", data);
+
     // Show containers
     document.getElementById('sentimentContainer').style.display = 'block';
     document.getElementById('responseContainer').style.display = 'block';
+    document.getElementById('botAnalysisSection').style.display = 'block';
+    document.getElementById('feedbackContainer').style.display = 'block';
 
-    // Update sentiment section
-    const sentimentLabel = document.getElementById('sentimentLabel');
-    const sentimentScore = document.getElementById('sentimentScore');
-    
+    // Store current review and response for feedback
+    currentReview = document.getElementById('reviewText').value;
+    currentResponse = data.response;
+    currentReviewId = data.review_id;
+
+    // Update response content
+    if (data.response) {
+        const responseContent = document.getElementById('responseContent');
+        responseContent.innerHTML = `${escapeHtml(data.response)}`;
+    }
+
+    // Update sentiment section if present
     if (data.sentiment) {
-        sentimentLabel.textContent = data.sentiment.label || 'neutral';
-        sentimentLabel.className = `badge ${getSentimentBadgeClass(data.sentiment.label)}`;
-        sentimentScore.textContent = `${((data.sentiment.score || 0.5) * 100).toFixed(1)}%`;
+        updateSentimentSection(data.sentiment);
     }
 
-    // Update aspects section
-    const aspectsContainer = document.getElementById('aspectsContainer');
-    if (aspectsContainer && data.aspects && data.aspects.length > 0) {
-        aspectsContainer.innerHTML = data.aspects.map(aspect => `
-            <div class="aspect-item">
-                <span class="badge bg-info">${aspect.category}</span>
-                <p class="mb-0 mt-1">${aspect.text}</p>
-            </div>
-        `).join('');
-        aspectsContainer.style.display = 'block';
-    } else if (aspectsContainer) {
-        aspectsContainer.style.display = 'none';
-    }
-
-    // Update response section
-    const responseContent = document.getElementById('responseContent');
-    if (responseContent) {
-        if (data.response) {
-            responseContent.innerHTML = data.response.split('\n').map(line => 
-                line.trim() ? `<p>${line}</p>` : '<br>'
-            ).join('');
-        } else {
-            responseContent.innerHTML = '<p>No response generated.</p>';
-        }
-    }
-
-    // Update context section
-    const contextContent = document.getElementById('contextContent');
-    if (contextContent) {
-        if (data.context) {
-            contextContent.innerHTML = data.context.split('\n').map(line => 
-                line.trim() ? `<p>${line}</p>` : '<br>'
-            ).join('');
-            document.getElementById('contextSection').style.display = 'block';
-        } else {
-            document.getElementById('contextSection').style.display = 'none';
-        }
-    }
-
-    // Update sentiment analysis section
-    if (data.sentiment && data.sentiment.analysis) {
-        const analysis = data.sentiment.analysis;
-        const analysisHtml = `
-            <div class="sentiment-analysis">
-                <div class="analysis-header d-flex justify-content-between align-items-center">
-                    <h6>Detailed Analysis</h6>
-                    <span class="badge ${getEmotionBadgeClass(analysis.primary_emotion)}">
-                        ${analysis.primary_emotion}
-                    </span>
-                </div>
-                
-                <div class="analysis-metrics">
-                    <div class="metric-item">
-                        <label>Sentiment Score</label>
+    // Update bot analysis section
+    if (data.bot_analysis) {
+        // Update scores
+        const scoresContainer = document.getElementById('botScores');
+        const scores = data.bot_analysis.scores || {};
+        
+        scoresContainer.innerHTML = `
+            <div class="score-details mb-3">
+                ${Object.entries(scores).map(([key, value]) => `
+                    <div class="score-item">
+                        <span class="score-label">${key.replace(/_/g, ' ')}</span>
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" 
-                                 style="width: ${analysis.sentiment_score * 100}%"
-                                 aria-valuenow="${analysis.sentiment_score * 100}" 
-                                 aria-valuemin="0" aria-valuemax="100">
-                                ${(analysis.sentiment_score * 100).toFixed(1)}%
+                            <div class="progress-bar bg-${getScoreClass(value)}" 
+                                 role="progressbar" 
+                                 style="width: ${value * 100}%" 
+                                 aria-valuenow="${value * 100}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                ${(value * 100).toFixed(1)}%
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="metric-item">
-                        <label>Urgency Level</label>
-                        <span class="badge ${getUrgencyBadgeClass(analysis.urgency)}">
-                            ${analysis.urgency}
-                        </span>
-                    </div>
-                </div>
-                
-                ${analysis.key_points.length > 0 ? `
-                    <div class="key-points mt-3">
-                        <h6>Key Points</h6>
-                        <ul class="list-unstyled">
-                            ${analysis.key_points.map(point => `
-                                <li><i class="bi bi-dot"></i> ${point}</li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                ` : ''}
-                
-                ${analysis.issues.length > 0 ? `
-                    <div class="issues mt-3">
-                        <h6>Identified Issues</h6>
-                        <ul class="list-unstyled">
-                            ${analysis.issues.map(issue => `
-                                <li><i class="bi bi-exclamation-triangle"></i> ${issue}</li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                ` : ''}
+                `).join('')}
             </div>
         `;
+
+        // Update flags
+        const flagsContainer = document.getElementById('botFlags');
+        const flags = data.bot_analysis.flags || [];
         
-        document.getElementById('sentimentAnalysis').innerHTML = analysisHtml;
+        if (flags.length > 0) {
+            flagsContainer.innerHTML = `
+                <div class="alert alert-warning mb-0">
+                    <h6 class="alert-heading mb-2">Potential Issues Detected:</h6>
+                    <ul class="list-unstyled mb-0">
+                        ${flags.map(flag => `
+                            <li class="mb-1">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                ${formatFlagMessage(flag)}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        } else {
+            flagsContainer.innerHTML = `
+                <div class="alert alert-success mb-0">
+                    <i class="bi bi-check-circle me-2"></i>
+                    No issues detected in the response
+                </div>
+            `;
+        }
     }
 
-    // Add animation class for smooth appearance
-    document.querySelectorAll('.fade-in').forEach(el => {
-        el.classList.remove('fade-in');
-        void el.offsetWidth; // Trigger reflow
-        el.classList.add('fade-in');
-    });
+    // Reset feedback form
+    resetFeedbackForm();
+}
 
-    // Store current review and response
-    currentReview = document.getElementById('reviewText').value;
-    currentResponse = data.response;
-    
-    // Show feedback container
-    showFeedbackContainer();
+function getScoreClass(score) {
+    if (score >= 0.7) return 'success';
+    if (score >= 0.4) return 'warning';
+    return 'danger';
+}
+
+function formatFlagMessage(flag) {
+    const messages = {
+        'high_bot_probability': 'Response appears automated',
+        'excessive_template_usage': 'Heavy use of template phrases',
+        'low_genuineness': 'Response lacks personalization',
+        'low_uniqueness': 'Very similar to previous responses',
+        'low_context_relevance': 'May not fully address the review'
+    };
+    return messages[flag] || flag.replace(/_/g, ' ');
 }
 
 function showFeedbackContainer() {
-    document.getElementById('feedbackContainer').style.display = 'block';
+    const container = document.getElementById('feedbackContainer');
+    if (container) {
+        container.style.display = 'block';
+        container.classList.add('fade-in');
+        
+        // Reset feedback form
+        resetFeedbackForm();
+    }
+}
+
+function resetFeedbackForm() {
+    // Reset ratings
+    document.querySelectorAll('.rating-container button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Reset sliders - using the correct IDs from the HTML
+    const empathySlider = document.getElementById('empathyScore');
+    if (empathySlider) empathySlider.value = 3;
+    
+    const relevanceSlider = document.getElementById('relevanceScore');
+    if (relevanceSlider) relevanceSlider.value = 3;
+    
+    const helpfulnessSlider = document.getElementById('helpfulnessScore');
+    if (helpfulnessSlider) helpfulnessSlider.value = 3;
+    
+    // Clear comments
+    const commentsField = document.getElementById('feedbackComments');
+    if (commentsField) commentsField.value = '';
+}
+
+function rateResponse(rating) {
+    // Remove active class from all buttons
+    document.querySelectorAll('.rating-container button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Add active class to clicked button
+    const clickedButton = document.querySelector(`.rating-container button:nth-child(${rating})`);
+    if (clickedButton) {
+        clickedButton.classList.add('active');
+    }
+    
+    // Store rating
+    document.getElementById('helpfulnessScore').value = rating;
 }
 
 function submitFeedback(isGood) {
-    const feedbackData = {
-        review_text: currentReview,
-        response: currentResponse,
-        is_good: isGood,
-        empathy_score: parseInt(document.getElementById('empathyScore').value),
-        relevance_score: parseInt(document.getElementById('relevanceScore').value),
-        helpfulness_score: parseInt(document.getElementById('helpfulnessScore').value),
-        settings: responseSettings,
-        comments: document.getElementById('feedbackComments').value
-    };
+    if (!currentReviewId) {
+        showAlert('Error: No review ID found. Please try processing the review again.', 'danger');
+        return;
+    }
 
+    // Get scores with null checks
+    const empathyScore = document.getElementById('empathyScore')?.value || 3;
+    const relevanceScore = document.getElementById('relevanceScore')?.value || 3;
+    const helpfulnessScore = document.getElementById('helpfulnessScore')?.value || 3;
+    
+    const feedbackData = {
+        review_id: currentReviewId,
+        response: currentResponse,  // Add the current response
+        feedback_data: {  // Wrap the feedback data in a feedback_data object
+            helpfulness_score: parseInt(helpfulnessScore),
+            empathy_score: parseInt(empathyScore),
+            relevance_score: parseInt(relevanceScore),
+            is_good: isGood
+        }
+    };
+    
+    // Show loading state on buttons
+    const goodButton = document.querySelector('#feedbackContainer .btn-success');
+    const badButton = document.querySelector('#feedbackContainer .btn-danger');
+    const originalGoodHtml = goodButton?.innerHTML;
+    const originalBadHtml = badButton?.innerHTML;
+    
+    if (goodButton) goodButton.disabled = true;
+    if (badButton) badButton.disabled = true;
+    
+    if (isGood && goodButton) {
+        goodButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+    } else if (!isGood && badButton) {
+        badButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+    }
+    
+    // Submit feedback
     fetch('/submit_feedback', {
         method: 'POST',
         headers: {
@@ -299,35 +432,56 @@ function submitFeedback(isGood) {
         },
         body: JSON.stringify(feedbackData)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
-        if (data.status === 'success') {
-            showAlert('Thank you for your feedback!', 'success');
-            // Clear feedback form
-            document.getElementById('feedbackComments').value = '';
-            document.getElementById('empathyScore').value = 3;
-            document.getElementById('relevanceScore').value = 3;
-            document.getElementById('helpfulnessScore').value = 3;
-        } else {
-            showAlert('Failed to submit feedback', 'danger');
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        showAlert('Thank you for your feedback!', 'success');
+        // Hide feedback container with animation
+        const feedbackContainer = document.getElementById('feedbackContainer');
+        if (feedbackContainer) {
+            feedbackContainer.classList.add('fade-out');
+            setTimeout(() => {
+                feedbackContainer.style.display = 'none';
+                feedbackContainer.classList.remove('fade-out');
+            }, 300);
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error submitting feedback', 'danger');
+        console.error('Feedback submission error:', error);
+        showAlert('Error submitting feedback: ' + error.message, 'danger');
+    })
+    .finally(() => {
+        // Restore buttons to original state
+        if (goodButton) {
+            goodButton.disabled = false;
+            goodButton.innerHTML = originalGoodHtml;
+        }
+        if (badButton) {
+            badButton.disabled = false;
+            badButton.innerHTML = originalBadHtml;
+        }
     });
 }
 
-// Add rating functionality
-function rateResponse(score) {
-    document.getElementById('helpfulnessScore').value = score;
-    // Update button styles
-    document.querySelectorAll('.rating-container button').forEach(btn => {
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-outline-primary');
-    });
-    event.target.classList.remove('btn-outline-primary');
-    event.target.classList.add('btn-primary');
+// Helper function to generate a unique review ID
+function generateReviewId(reviewText) {
+    // Create a hash of the review text to use as an ID
+    let hash = 0;
+    for (let i = 0; i < reviewText.length; i++) {
+        const char = reviewText.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash).toString(16);
 }
 
 // Initialize UI controls
@@ -368,6 +522,12 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             processReview();
         }
+    });
+
+    // Initialize any existing sentiment badges
+    document.querySelectorAll('.sentiment-badge').forEach(badge => {
+        const sentiment = badge.textContent.toLowerCase().trim();
+        badge.className = getSentimentBadgeClass(sentiment);
     });
 });
 

@@ -1,5 +1,14 @@
-flask
-pandas
+flask==3.0.2
+celery==5.3.6
+python-dotenv==1.0.1
+openai==1.12.0
+pandas==2.2.0
+werkzeug==3.0.1
+redis==5.0.1
+uuid==1.30
+typing==3.7.4.3
+datetime==5.4
+pathlib==1.0.1
 numpy
 faiss-cpu
 sentence-transformers

@@ -1,1073 +1,607 @@
 # tasks.py
-import os
-from celery import Celery
-import pandas as pd
-from openai import OpenAI
-from sentence_transformers import SentenceTransformer
-import faiss
-import numpy as np
-import re
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from dotenv import load_dotenv
 import logging
-from llama_cpp import Llama
 import json
-from pathlib import Path
-from fuzzywuzzy import fuzz
+from typing import Dict, Any, List, Union, Optional, Tuple
 from functools import lru_cache
-import concurrent.futures
-from typing import Dict, Any, List, Optional, Union, Tuple
-import asyncio
-from celery.signals import worker_init
+import os
 from datetime import datetime
-import torch
+from pathlib import Path
 import random
+from celery import Celery
+from dotenv import load_dotenv
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import openai
+import re
+from collections import Counter
+from openai import OpenAI
+from response_db import ResponseDatabase
+from bot_detection import BotDetector
+import uuid
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+# Load environment variables
 load_dotenv()
 
 # Initialize Celery
-celery = Celery(__name__, 
-                broker=os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0'),
-                backend=os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0'))
-celery.config_from_object('celery_config')
+celery = Celery('tasks')
+celery.conf.update(
+    broker_url=os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0'),
+    result_backend=os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0'),
+    task_serializer='json',
+    accept_content=['json'],
+    result_serializer='json',
+    timezone='UTC',
+    enable_utc=True,
+)
 
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-EMBEDDING_MODEL_NAME = os.environ.get('EMBEDDING_MODEL_NAME', 'all-MiniLM-L6-v2')
-FAISS_INDEX_PATH = os.environ.get('FAISS_INDEX_PATH', 'faq.index')
+# Initialize OpenAI client
+openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
-embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
-sentiment_analyzer = SentimentIntensityAnalyzer()
-
-logger = logging.getLogger(__name__)
-
-# Configuration constants
-CONFIG_FILE = Path('config.json')
-DEFAULT_CONFIG = {
-    'llm_provider': 'openai',
-    'openai_api_key': os.environ.get('OPENAI_API_KEY', ''),
-    'llama_model_path': ''
-}
-
-def load_config():
-    try:
-        with open(CONFIG_FILE, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        # If config doesn't exist, use default config with environment variables
-        return DEFAULT_CONFIG
-
-
-# Global variables
+# Global variables for FAQ handling
+FAQ_FILE = 'data/faq.csv'
 faq_data = None
-question_list = None
-encoder = None
-faiss_index = None
+faq_vectorizer = None
+faq_vectors = None
 
-@worker_init.connect
-def init_worker(**kwargs):
-    """Initialize resources when worker starts"""
-    global faq_data, question_list, encoder, faiss_index
-    initialize_faq_index()
+# Default FAQ entries to prevent empty vocabulary
+DEFAULT_FAQS = [
+    {
+        'question': 'How do I activate my card?',
+        'answer': 'To activate your card, please call the number on the back of your card or visit our secure website. The activation process typically takes just a few minutes.'
+    },
+    {
+        'question': 'What should I do if I experience delays in card activation?',
+        'answer': 'If you experience delays in card activation, please contact our support team at 1-800-XXX-XXXX. We aim to resolve activation issues within 2 hours.'
+    },
+    {
+        'question': 'How can I contact customer support?',
+        'answer': 'You can reach our customer support team 24/7 through multiple channels: Phone: 1-800-XXX-XXXX, Email: support@example.com, or Live Chat on our website.'
+    }
+]
+
+# Initialize response database
+response_db = ResponseDatabase()
+
+# Initialize bot detector
+bot_detector = BotDetector()
 
 def initialize_faq_index() -> bool:
-    """Initialize the FAQ index from CSV file with FAISS"""
-    global faq_data, question_list, encoder, faiss_index
-    try:
-        # Load FAQ data from CSV
-        csv_path = os.path.join('data', 'faq.csv')
-        if not os.path.exists(csv_path):
-            logger.warning(f"FAQ file not found at {csv_path}")
-            return False
-            
-        faq_data = pd.read_csv(csv_path)
-        logger.info(f"Loaded FAQ data with shape: {faq_data.shape}")
-        
-        # Store questions separately
-        question_list = faq_data['User Query'].tolist()
-        if not question_list:
-            logger.warning("No questions found in FAQ data")
-            return False
-            
-        logger.info(f"Number of questions loaded: {len(question_list)}")
-        
-        # Initialize sentence transformer
-        encoder = SentenceTransformer('paraphrase-MiniLM-L3-v2')
-        
-        # Create embeddings
-        embeddings = encoder.encode(question_list, convert_to_tensor=True)
-        embeddings = embeddings.cpu().numpy().astype('float32')
-        
-        # Initialize FAISS index
-        dimension = embeddings.shape[1]
-        faiss_index = faiss.IndexFlatL2(dimension)
-        faiss_index.add(embeddings)
-        
-        logger.info(f"FAISS index created with {faiss_index.ntotal} vectors")
-        return True
-    except Exception as e:
-        logger.error(f"Error initializing FAQ index: {str(e)}")
-        return False
-
-def load_faq_index():
-    """Load the FAISS index if it exists, otherwise create it"""
-    global faq_data
+    """
+    Initialize the FAQ index by creating the necessary directory and file structure.
+    If the FAQ file doesn't exist or is empty, populate it with default FAQs.
     
+    Returns:
+        bool: True if initialization was successful, False otherwise
+    """
     try:
-        if Path('faq.index').exists():
-            faq_data = pd.read_csv('faq.csv')
-            logger.info("FAQ index loaded successfully")
+        # Create data directory if it doesn't exist
+        Path('data').mkdir(exist_ok=True)
+        
+        # Check if FAQ file exists and has content
+        faq_path = Path(FAQ_FILE)
+        if not faq_path.exists() or faq_path.stat().st_size == 0:
+            # Create new FAQ file with default content
+            df = pd.DataFrame(DEFAULT_FAQS)
+            # Ensure directory exists
+            faq_path.parent.mkdir(parents=True, exist_ok=True)
+            # Save with required columns
+            df.to_csv(FAQ_FILE, index=False)
+            logging.info(f"Created new FAQ file with {len(DEFAULT_FAQS)} default entries")
             return True
-        else:
-            return initialize_faq_index()
-    
+            
+        # If file exists, validate and update if necessary
+        df = pd.read_csv(FAQ_FILE)
+        
+        # Normalize column names to lowercase
+        df.columns = [col.lower() for col in df.columns]
+        
+        # Check for required columns
+        required_columns = {'question', 'answer'}
+        missing_columns = required_columns - set(df.columns)
+        
+        if missing_columns:
+            # If missing required columns, create new file with default content
+            df = pd.DataFrame(DEFAULT_FAQS)
+            df.to_csv(FAQ_FILE, index=False)
+            logging.warning(f"Recreated FAQ file due to missing columns: {missing_columns}")
+            return True
+            
+        # Ensure there's at least one valid entry
+        if len(df) == 0:
+            df = pd.DataFrame(DEFAULT_FAQS)
+            df.to_csv(FAQ_FILE, index=False)
+            logging.warning("Populated empty FAQ file with default entries")
+            return True
+            
+        # Clean the data
+        df['question'] = df['question'].fillna('')
+        df['answer'] = df['answer'].fillna('')
+        df = df[df['question'].str.strip().str.len() > 0]
+        
+        if len(df) == 0:
+            # If no valid entries after cleaning, add defaults
+            df = pd.DataFrame(DEFAULT_FAQS)
+            logging.warning("Added default FAQs after cleaning resulted in empty dataset")
+        
+        # Save cleaned data
+        df.to_csv(FAQ_FILE, index=False)
+        logging.info(f"Successfully initialized FAQ index with {len(df)} entries")
+        return True
+        
     except Exception as e:
-        logger.error(f"Error loading FAQ index: {e}")
-        return False
+        logging.error(f"Error initializing FAQ index: {str(e)}")
+        # Create with defaults on error
+        try:
+            df = pd.DataFrame(DEFAULT_FAQS)
+            Path('data').mkdir(exist_ok=True)
+            df.to_csv(FAQ_FILE, index=False)
+            logging.warning("Created FAQ file with defaults after error")
+            return True
+        except Exception as e2:
+            logging.error(f"Critical error creating FAQ file: {str(e2)}")
+            return False
 
-@lru_cache(maxsize=100)
-def get_relevant_faq_answers(review_text: str, k: int = 3) -> List[Dict[str, str]]:
-    """Get relevant FAQ entries based on the review text"""
-    global faq_data, question_list, encoder, faiss_index
+def load_faq_index(force_reload: bool = False) -> bool:
+    """Load and initialize the FAQ index"""
+    global faq_data, faq_vectorizer, faq_vectors
     
     try:
-        # Check if index needs initialization
-        if not all([faq_data is not None, question_list, encoder, faiss_index]):
-            if not initialize_faq_index():
-                logger.warning("Failed to initialize FAQ index")
-                return []
+        if faq_data is not None and not force_reload:
+            return True
         
-        # Get number of FAQs from FAISS index
-        num_faqs = faiss_index.ntotal
-        if num_faqs == 0:
-            logger.warning("No FAQ entries in FAISS index")
+        # Initialize with default FAQs if needed
+        initialize_faq_index()
+        
+        # Load FAQ data
+        faq_data = pd.read_csv(FAQ_FILE)
+        
+        # Normalize column names
+        faq_data.columns = [col.lower() for col in faq_data.columns]
+        
+        # Ensure required columns exist
+        required_columns = {'question', 'answer'}
+        if not all(col in faq_data.columns for col in required_columns):
+            missing_cols = required_columns - set(faq_data.columns)
+            raise ValueError(f"Missing required columns in FAQ file: {missing_cols}")
+        
+        # Ensure we have at least one valid question
+        if len(faq_data) == 0 or faq_data['question'].isna().all():
+            faq_data = pd.DataFrame(DEFAULT_FAQS)
+        
+        # Clean the questions
+        faq_data['question'] = faq_data['question'].fillna('')
+        faq_data['question'] = faq_data['question'].astype(str).apply(lambda x: x.strip())
+        
+        # Remove empty questions
+        faq_data = faq_data[faq_data['question'].str.len() > 0]
+        
+        # Initialize TF-IDF vectorizer with minimal parameters
+        faq_vectorizer = TfidfVectorizer(
+            stop_words=None,  # Don't remove stop words
+            max_features=None,  # Don't limit features
+            ngram_range=(1, 1),  # Use only unigrams
+            min_df=1,  # Include all terms
+            token_pattern=r'(?u)\b\w+\b'  # Match any word character
+        )
+        
+        # Create TF-IDF vectors for FAQ questions
+        faq_vectors = faq_vectorizer.fit_transform(faq_data['question'])
+        
+        logger.info(f"Successfully loaded FAQ index with {len(faq_data)} entries")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error loading FAQ index: {str(e)}")
+        # Initialize with default values on error
+        faq_data = pd.DataFrame(DEFAULT_FAQS)
+        faq_vectorizer = TfidfVectorizer(token_pattern=r'(?u)\b\w+\b')
+        faq_vectors = faq_vectorizer.fit_transform(faq_data['question'])
+        return False
+
+def get_relevant_faqs(query: str, top_k: int = 3) -> List[Dict[str, str]]:
+    """Get relevant FAQ entries for a given query"""
+    try:
+        if faq_data is None or faq_vectorizer is None or faq_vectors is None:
+            load_faq_index()
+        
+        # Ensure query is not empty
+        if not query or not query.strip():
             return []
         
-        # Encode query
-        query_embedding = encoder.encode([review_text], convert_to_tensor=True)
-        query_embedding = query_embedding.cpu().numpy().astype('float32')
+        # Transform query using the same vectorizer
+        query_vector = faq_vectorizer.transform([query])
         
-        # Search
-        k = min(k, num_faqs)
-        distances, indices = faiss_index.search(query_embedding, k)
+        # Calculate similarity scores
+        similarities = cosine_similarity(query_vector, faq_vectors).flatten()
         
-        # Process results
+        # Get top-k most similar FAQs
+        top_indices = similarities.argsort()[-top_k:][::-1]
+        
+        # Filter by minimum similarity threshold
+        threshold = 0.1
         relevant_faqs = []
-        max_distance = 1.5  # Threshold for relevance
-        
-        for dist, idx in zip(distances[0], indices[0]):
-            if dist > max_distance:
-                continue
-                
-            if 0 <= idx < len(faq_data):
+        for idx in top_indices:
+            if similarities[idx] >= threshold:
                 relevant_faqs.append({
-                    'question': faq_data.iloc[idx]['User Query'],
-                    'answer': faq_data.iloc[idx]['Product Responses'],
-                    'relevance': float(1.0 - (dist / 2.0))  # Convert distance to relevance
+                    'question': faq_data.iloc[idx]['question'],
+                    'answer': faq_data.iloc[idx]['answer'],
+                    'similarity': float(similarities[idx])
                 })
         
-        logger.info(f"Found {len(relevant_faqs)} relevant FAQs")
         return relevant_faqs
-    
+        
     except Exception as e:
-        logger.error(f"Error in FAQ search: {str(e)}")
+        logger.error(f"Error getting relevant FAQs: {str(e)}")
         return []
-
-def get_llm_client():
-    config = load_config()
-    
-    if config['llm_provider'] == 'openai':
-        api_key = config['openai_api_key'] or os.environ.get('OPENAI_API_KEY')
-        if not api_key:
-            raise ValueError("OpenAI API key not found in config or environment variables")
-        return OpenAI(api_key=api_key)
-    else:
-        if not LLAMA_AVAILABLE:
-            raise RuntimeError("LLaMA support is not available. Please install llama-cpp-python package.")
-        return Llama(model_path=config['llama_model_path'])
-
-
-def format_prompt_with_context(review_data: Dict[str, str], faq_context: str, 
-                             feedback_history: Optional[List] = None, 
-                             authenticity_analysis: Optional[Dict] = None, 
-                             bot_analysis: Optional[Dict] = None) -> str:
-    """
-    Format the prompt with all available context for the LLM.
-    """
-    try:
-        # Safely get the review text
-        review_text = review_data.get('text', '')
-        if not review_text:
-            logger.warning("No review text provided in review_data")
-            review_text = "No review text provided"
-
-        # Format feedback history if available
-        feedback_context = ""
-        if feedback_history:
-            feedback_entries = []
-            for f in feedback_history:
-                if isinstance(f, dict):
-                    entry = (
-                        f"Similar Review: {f.get('review_text', 'N/A')}\n"
-                        f"Response: {f.get('response', 'N/A')}\n"
-                        f"Feedback: {f.get('feedback', 'N/A')}\n"
-                        f"Empathy Score: {f.get('empathy_score', 'N/A')}\n"
-                        f"Hallucination: {'Yes' if f.get('hallucination_detected', False) else 'No'}\n"
-                        f"Agent Notes: {f.get('agent_input', 'None')}\n"
-                    )
-                    feedback_entries.append(entry)
-            if feedback_entries:
-                feedback_context = "\nPrevious Feedback History:\n" + "\n".join(feedback_entries)
-
-        # Format analysis context
-        analysis_context = ""
-        if authenticity_analysis or bot_analysis:
-            analysis_context = "\nReview Analysis:\n"
-            if authenticity_analysis and isinstance(authenticity_analysis, dict):
-                analysis_context += (
-                    f"Authenticity Score: {authenticity_analysis.get('authenticity_score', 'N/A')}\n"
-                    f"Authenticity Confidence: {authenticity_analysis.get('confidence', 'N/A')}\n"
-                    f"Red Flags: {', '.join(authenticity_analysis.get('red_flags', ['None']))}\n"
-                )
-
-            if bot_analysis and isinstance(bot_analysis, dict):
-                analysis_context += (
-                    f"Bot Detection Score: {bot_analysis.get('bot_score', 'N/A')}\n"
-                    f"Bot Pattern Type: {bot_analysis.get('pattern_type', 'N/A')}\n"
-                    f"Bot Indicators: {', '.join(bot_analysis.get('detection_points', ['None']))}\n"
-                )
-
-        # Combine all context
-        prompt = f"""Review Analysis Context:{analysis_context}
-
-FAQ Context:
-{faq_context}
-{feedback_context}
-
-Review to respond to:
-{review_text}
-
-Consider all provided context when crafting your response. Pay special attention to:
-1. Previous feedback and how it was received
-2. Review authenticity and bot detection results
-3. Relevant FAQ information
-
-Please provide your response in two parts:
-1. CONTEXT: Summarize the relevant context you're using from FAQs, feedback history, and analysis
-2. RESPONSE: Your actual response to the review, considering all context
-
-Format your response as:
-CONTEXT: <your context summary>
-RESPONSE: <your response to the review>
-"""
-        return prompt
-
-    except Exception as e:
-        logger.error(f"Error formatting prompt: {str(e)}")
-        return f"Review to respond to:\n{review_data.get('text', 'No review text provided')}"
-
-def analyze_review_authenticity(review_text):
-    """
-    Analyze if a review appears to be fake/spam based on various indicators.
-    Returns a dict with authenticity score and reasoning.
-    """
-    try:
-        prompt = f"""Analyze this review for authenticity. Consider these factors:
-1. Generic/vague language
-2. Extreme sentiment without specific details
-3. Repetitive patterns or keywords
-4. Unnatural language patterns
-5. Inconsistencies in detail level
-6. Bot-like characteristics
-7. Marketing-style language
-8. Time and location consistency
-9. Reviewer behavior patterns
-
-Review: {review_text}
-
-Provide analysis in this format:
-AUTHENTICITY_SCORE: (0-1, where 1 is most authentic)
-RED_FLAGS: (list key suspicious elements)
-CONFIDENCE: (0-1, how confident in this assessment)
-REASONING: (detailed explanation)
-"""
-
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are an expert in detecting fake reviews and spam content."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3
-        )
-
-        result = response.choices[0].message.content
-        
-        # Parse the response
-        analysis = {}
-        current_section = None
-        sections = ['AUTHENTICITY_SCORE:', 'RED_FLAGS:', 'CONFIDENCE:', 'REASONING:']
-        
-        for line in result.split('\n'):
-            for section in sections:
-                if line.startswith(section):
-                    current_section = section.replace(':', '').lower()
-                    content = line.replace(section, '').strip()
-                    if current_section == 'authenticity_score':
-                        analysis[current_section] = float(content)
-                    elif current_section == 'confidence':
-                        analysis[current_section] = float(content)
-                    elif current_section == 'red_flags':
-                        analysis[current_section] = [flag.strip() for flag in content.strip('[]').split(',')]
-                    else:
-                        analysis[current_section] = content
-                    break
-            else:
-                if current_section and current_section == 'reasoning':
-                    analysis[current_section] = analysis.get(current_section, '') + ' ' + line.strip()
-
-        return analysis
-    except Exception as e:
-        logger.exception("Error in authenticity analysis: %s", e)
-        return {
-            'authenticity_score': 0.5,
-            'red_flags': ['Analysis failed'],
-            'confidence': 0.0,
-            'reasoning': f'Error during analysis: {str(e)}'
-        }
-
-def analyze_bot_patterns(review_text, review_metadata=None):
-    """
-    Analyze if a review was likely generated by a bot.
-    Takes review text and optional metadata (timestamp, user info, etc.)
-    Returns detailed bot analysis.
-    """
-    try:
-        prompt = f"""Analyze this review for bot-generated content. Consider these specific indicators:
-
-1. Language Patterns:
-- Repetitive phrases or structures
-- Unnatural language combinations
-- Machine-like grammar perfection
-- Templated content patterns
-
-2. Content Analysis:
-- Generic/non-specific details
-- Contextually irrelevant information
-- Inconsistent narrative flow
-- Keyword stuffing
-
-3. Bot Behavior Indicators:
-- Time pattern anomalies
-- Mass-produced content signs
-- Cross-platform pattern matching
-- Automated response characteristics
-
-4. Technical Markers:
-- NLP artifacts
-- Language model patterns
-- Statistical anomalies
-- Content spinning signs
-
-Review: {review_text}
-
-Provide analysis in this format:
-BOT_SCORE: (0-1, where 1 means definitely bot)
-CONFIDENCE: (0-1)
-DETECTION_POINTS: (list specific bot indicators found)
-PATTERN_TYPE: (identify type of bot if detected: SPAM_BOT, REVIEW_BOT, AI_GENERATOR, HUMAN_LIKE_BOT, or UNCERTAIN)
-REASONING: (detailed explanation)
-"""
-
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are an expert in detecting bot-generated content and automated review systems."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3
-        )
-
-        result = response.choices[0].message.content
-        
-        # Parse the response
-        analysis = {}
-        current_section = None
-        sections = ['BOT_SCORE:', 'CONFIDENCE:', 'DETECTION_POINTS:', 'PATTERN_TYPE:', 'REASONING:']
-        
-        for line in result.split('\n'):
-            for section in sections:
-                if line.startswith(section):
-                    current_section = section.replace(':', '').lower()
-                    content = line.replace(section, '').strip()
-                    if current_section in ['bot_score', 'confidence']:
-                        analysis[current_section] = float(content)
-                    elif current_section == 'detection_points':
-                        analysis[current_section] = [point.strip() for point in content.strip('[]').split(',')]
-                    elif current_section == 'pattern_type':
-                        analysis[current_section] = content.strip()
-                    else:
-                        analysis[current_section] = content
-                    break
-            else:
-                if current_section and current_section == 'reasoning':
-                    analysis[current_section] = analysis.get(current_section, '') + ' ' + line.strip()
-
-        return analysis
-    except Exception as e:
-        logger.exception("Error in bot analysis: %s", e)
-        return {
-            'bot_score': 0.5,
-            'confidence': 0.0,
-            'detection_points': ['Analysis failed'],
-            'pattern_type': 'UNCERTAIN',
-            'reasoning': f'Error during analysis: {str(e)}'
-        }
-
-def calculate_bot_detection_metrics(text: str) -> Dict[str, float]:
-    """Calculate metrics for bot detection"""
-    try:
-        # Basic metrics
-        char_count = len(text)
-        word_count = len(text.split())
-        avg_word_length = char_count / word_count if word_count > 0 else 0
-        
-        # Pattern analysis
-        repeated_phrases = len(set([phrase for phrase in text.split() if text.count(phrase) > 2]))
-        
-        # Normalize scores between 0 and 1
-        metrics = {
-            'repetition_score': min(1.0, repeated_phrases / word_count) if word_count > 0 else 0,
-            'length_score': min(1.0, word_count / 100),  # Normalize based on typical review length
-            'complexity_score': min(1.0, avg_word_length / 10),  # Normalize based on typical word length
-        }
-        
-        # Calculate overall bot probability
-        metrics['bot_probability'] = (
-            metrics['repetition_score'] * 0.4 +
-            metrics['length_score'] * 0.3 +
-            metrics['complexity_score'] * 0.3
-        )
-        
-        return metrics
-    except Exception as e:
-        print(f"Error calculating bot metrics: {str(e)}")
-        return {
-            'repetition_score': 0,
-            'length_score': 0,
-            'complexity_score': 0,
-            'bot_probability': 0
-        }
-
-def get_feedback_history(review_text, response_text=''):
-    """
-    Get relevant feedback history for similar reviews/responses.
-    Returns list of relevant feedback entries.
-    """
-    try:
-        feedback_file = Path('feedback_history.json')
-        if not feedback_file.exists():
-            return []
-
-        with open(feedback_file, 'r') as f:
-            feedback_history = json.load(f)
-        
-        # Get relevant feedback entries
-        relevant_feedback = []
-        for entry in feedback_history:
-            # Calculate similarity scores
-            review_similarity = fuzz.ratio(entry.get('review_text', ''), review_text)
-            response_similarity = fuzz.ratio(entry.get('response', ''), response_text) if response_text else 0
-            
-            # If either review or response is similar enough, include the feedback
-            if review_similarity > 60 or response_similarity > 60:
-                entry['similarity_score'] = max(review_similarity, response_similarity)
-                relevant_feedback.append(entry)
-        
-        # Sort by similarity score and return top 5
-        relevant_feedback.sort(key=lambda x: x.get('similarity_score', 0), reverse=True)
-        return relevant_feedback[:5]
-
-    except Exception as e:
-        logger.exception("Error getting feedback history: %s", e)
-        return []
-
-# Cache FAQ results to avoid repeated searches
-@lru_cache(maxsize=1000)
-def get_cached_faq_answers(text: str) -> Dict[str, Any]:
-    return get_relevant_faq_answers(text)
-
-# Cache sentiment analysis results
-@lru_cache(maxsize=1000)
-def get_cached_sentiment(text: str) -> Dict[str, Any]:
-    return analyze_sentiment(text)
-
-async def analyze_sentiment_async(text: str) -> Dict[str, Union[float, str, List[str]]]:
-    """Analyze sentiment asynchronously"""
-    try:
-        sentiment_score = analyze_sentiment(text)
-        return {
-            'label': get_sentiment_label(sentiment_score),
-            'score': sentiment_score,
-            'aspects': extract_aspects(text)
-        }
-    except Exception as e:
-        logger.error(f"Error in sentiment analysis: {str(e)}")
-        return {'label': 'neutral', 'score': 0.5, 'aspects': []}
-
-async def get_faq_context_async(text: str) -> str:
-    """Get FAQ context asynchronously"""
-    try:
-        faq_entries = get_relevant_faq_answers(text)
-        if not faq_entries:
-            return ""
-        
-        # Format entries with relevance scores
-        formatted_entries = []
-        for entry in faq_entries:
-            relevance_percent = int(entry['relevance'] * 100)
-            formatted_entries.append(
-                f"Similar Question: {entry['question']}\n"
-                f"Answer: {entry['answer']}\n"
-                f"Match Confidence: {relevance_percent}%"
-            )
-        
-        return "\n\n".join(formatted_entries)
-    except Exception as e:
-        logger.error(f"Error getting FAQ context: {str(e)}")
-        return ""
-
-async def generate_response_async(text: str, sentiment: Dict, context: str) -> str:
-    """Generate response asynchronously"""
-    return generate_response(text, sentiment['score'], context)
-
-async def parallel_analysis(text: str) -> Dict[str, Union[str, Dict]]:
-    """Run analysis tasks in parallel with timeout"""
-    try:
-        async with asyncio.timeout(5.0):
-            sentiment_score = analyze_sentiment(text)
-            context = await get_faq_context_async(text)
-            
-            sentiment = {
-                'label': get_sentiment_label(sentiment_score),
-                'score': sentiment_score,
-                'aspects': extract_aspects(text)
-            }
-            
-            response = generate_response(text, sentiment_score, context)
-            
-            return {
-                'sentiment': sentiment,
-                'response': response,
-                'context': context
-            }
-    except asyncio.TimeoutError:
-        logger.error("Analysis timed out")
-        return {
-            'sentiment': {'label': 'neutral', 'score': 0.5, 'aspects': []},
-            'response': "I apologize for the delay in processing your review.",
-            'context': ""
-        }
-    except Exception as e:
-        logger.error(f"Error in parallel analysis: {str(e)}")
-        raise
-
-def analyze_tone(text: str) -> Dict[str, float]:
-    """Analyze the emotional tone of the text"""
-    tone_indicators = {
-        'frustrated': {'words': {'frustrated', 'annoying', 'waste', 'difficult', 'confusing', 'stuck'},
-                      'score': 0},
-        'urgent': {'words': {'asap', 'urgent', 'immediately', 'emergency', 'critical', 'deadline'},
-                  'score': 0},
-        'disappointed': {'words': {'disappointed', 'expected', 'should', 'but', 'however', 'unfortunately'},
-                       'score': 0},
-        'appreciative': {'words': {'thanks', 'appreciate', 'grateful', 'helpful', 'good', 'great'},
-                        'score': 0}
-    }
-    
-    words = text.lower().split()
-    word_count = len(words)
-    
-    # Calculate tone scores
-    for tone in tone_indicators.values():
-        tone['score'] = sum(1 for word in words if word in tone['words']) / word_count
-    
-    return {tone: info['score'] for tone, info in tone_indicators.items()}
-
-def extract_key_points(text: str) -> List[str]:
-    """Extract key points from the review"""
-    key_points = []
-    
-    # Feature-related keywords
-    feature_keywords = {
-        'performance': ['slow', 'fast', 'speed', 'quick', 'lag', 'responsive'],
-        'usability': ['easy', 'difficult', 'intuitive', 'confusing', 'simple', 'complex'],
-        'reliability': ['crash', 'bug', 'error', 'stable', 'reliable', 'broken'],
-        'functionality': ['feature', 'work', 'doesn\'t work', 'broken', 'missing'],
-        'support': ['help', 'support', 'service', 'assistance', 'contact']
-    }
-    
-    words = text.lower().split()
-    sentences = text.split('.')
-    
-    # Extract points based on feature keywords
-    for category, keywords in feature_keywords.items():
-        for keyword in keywords:
-            if keyword in text.lower():
-                # Find the relevant sentence
-                for sentence in sentences:
-                    if keyword in sentence.lower():
-                        key_points.append({
-                            'category': category,
-                            'point': sentence.strip()
-                        })
-                        break
-    
-    return key_points
-
-def generate_empathetic_response(text: str, sentiment_score: float, tone: Dict[str, float], 
-                               key_points: List[Dict], context: str) -> str:
-    """Generate an empathetic and contextual response"""
-    
-    # Base templates with empathy
-    frustrated_templates = [
-        "I understand how frustrating this must be for you. {}",
-        "I can see why this situation would be frustrating. {}",
-        "Your frustration is completely valid. {}"
-    ]
-    
-    disappointed_templates = [
-        "I understand this wasn't what you expected. {}",
-        "I'm sorry we didn't meet your expectations. {}",
-        "I appreciate you bringing this to our attention. {}"
-    ]
-    
-    appreciative_templates = [
-        "We're so glad to hear about your positive experience! {}",
-        "Thank you for your kind words. {}",
-        "We really appreciate your positive feedback! {}"
-    ]
-    
-    neutral_templates = [
-        "Thank you for sharing your thoughts. {}",
-        "We appreciate your detailed feedback. {}",
-        "Thank you for taking the time to provide this feedback. {}"
-    ]
-    
-    # Select base template based on tone and sentiment
-    if tone['frustrated'] > 0.2:
-        base_template = random.choice(frustrated_templates)
-    elif tone['disappointed'] > 0.2:
-        base_template = random.choice(disappointed_templates)
-    elif tone['appreciative'] > 0.2:
-        base_template = random.choice(appreciative_templates)
-    else:
-        base_template = random.choice(neutral_templates)
-    
-    # Build response body based on key points
-    response_points = []
-    
-    for point in key_points:
-        category = point['category']
-        if category == 'performance':
-            response_points.append("Regarding the performance issues you mentioned, we're actively working on optimizations.")
-        elif category == 'usability':
-            response_points.append("We're constantly working to improve the user experience based on feedback like yours.")
-        elif category == 'reliability':
-            response_points.append("We take stability issues seriously and our team is investigating the reported problems.")
-        elif category == 'functionality':
-            response_points.append("We're reviewing the functionality concerns you've raised to ensure everything works as expected.")
-        elif category == 'support':
-            response_points.append("Our support team is here to help you with any additional assistance you need.")
-
-    # Combine response elements
-    response_body = " ".join(response_points)
-    
-    # Add action items or next steps
-    if sentiment_score < 0.3:  # Negative sentiment
-        action_items = "\n\nHere are some immediate steps we're taking:\n"
-        action_items += "1. Our team will investigate the specific issues you've mentioned\n"
-        action_items += "2. We'll reach out with updates on the reported problems\n"
-        action_items += "3. We're prioritizing fixes for the concerns you've raised"
-    else:
-        action_items = ""
-
-    # Add FAQ context if available
-    faq_section = ""
-    if context:
-        faq_section = "\n\nYou might find these related answers helpful:\n" + context
-
-    # Combine all parts
-    full_response = base_template.format(response_body)
-    if action_items:
-        full_response += action_items
-    if faq_section:
-        full_response += faq_section
-    
-    return full_response
-
-def process_review_task(
-    review_text: str,
-    empathy_level: int = 3,
-    creativity_level: int = 3,
-    include_personal_experience: bool = False,
-    include_examples: bool = False,
-    include_metaphors: bool = False
-) -> Dict[str, Union[str, Dict]]:
-    """Process a review with enhanced context and response generation"""
-    try:
-        # Get relevant FAQs using context manager
-        relevant_faqs = context_manager.get_relevant_faqs(review_text)
-        faq_context = context_manager.format_faq_context(relevant_faqs)
-        
-        # Analyze sentiment and authenticity
-        sentiment_score = analyze_sentiment(review_text)
-        authenticity_analysis = analyze_review_authenticity(review_text)
-        bot_analysis = analyze_bot_patterns(review_text)
-        
-        # Get feedback history
-        feedback_history = get_feedback_history(review_text)
-        
-        # Format prompt with all context
-        prompt = format_prompt_with_context(
-            {'text': review_text},  # Pass as dictionary with 'text' key
-            faq_context,
-            feedback_history,
-            authenticity_analysis,
-            bot_analysis
-        )
-        
-        try:
-            # Generate response using LLM
-            llm_client = get_llm_client()
-            completion = llm_client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "You are a helpful customer service agent."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7
-            )
-            
-            # Properly access the response content
-            response = completion.choices[0].message.content if completion.choices else "No response generated."
-            
-        except Exception as e:
-            logger.error(f"Error generating LLM response: {str(e)}")
-            response = "I apologize, but I encountered an error generating a response."
-        
-        # Prepare the result dictionary with proper type checking
-        result = {
-            'sentiment': {
-                'label': get_sentiment_label(sentiment_score),
-                'score': float(sentiment_score),  # Ensure it's a float
-            },
-            'authenticity': authenticity_analysis if isinstance(authenticity_analysis, dict) else {},
-            'bot_analysis': bot_analysis if isinstance(bot_analysis, dict) else {},
-            'response': str(response),  # Ensure it's a string
-            'context': str(faq_context),  # Ensure it's a string
-            'faqs_used': [
-                str(faq.get('question', '')) for faq in relevant_faqs 
-                if isinstance(faq, dict)
-            ]
-        }
-        
-        # Log successful processing
-        logger.info(f"Successfully processed review with {len(relevant_faqs)} relevant FAQs")
-        
-        return result
-        
-    except Exception as e:
-        logger.error(f"Error processing review: {str(e)}")
-        # Return a safe fallback response
-        return {
-            'sentiment': {'label': 'neutral', 'score': 0.5},
-            'authenticity': {},
-            'bot_analysis': {},
-            'response': "I apologize, but I encountered an error processing your review.",
-            'context': "",
-            'faqs_used': []
-        }
-
-def analyze_sentiment(text: str) -> float:
-    """Enhanced sentiment analysis with better negative detection"""
-    # Expanded word lists with informal expressions and intensifiers
-    positive_words = {
-        'good', 'great', 'excellent', 'amazing', 'love', 'perfect', 'awesome', 
-        'fantastic', 'wonderful', 'best', 'superb', 'outstanding', 'helpful',
-        'impressed', 'positive', 'recommended', 'happy', 'pleased', 'satisfied'
-    }
-    
-    negative_words = {
-        # Basic negative words
-        'bad', 'poor', 'terrible', 'awful', 'hate', 'worst', 'horrible',
-        'disappointing', 'useless', 'waste', 'difficult', 'unhappy',
-        # Informal negative expressions
-        'sucks', 'suck', 'garbage', 'trash', 'crap', 'rubbish', 'junk',
-        'worthless', 'pathetic', 'joke', 'mess', 'disaster', 'fail', 'failed',
-        # Problem indicators
-        'broken', 'bug', 'buggy', 'error', 'issue', 'problem', 'glitch',
-        'unusable', 'unreliable', 'unstable', 'annoying', 'frustrating'
-    }
-    
-    # Intensifiers that strengthen sentiment
-    intensifiers = {
-        'very', 'really', 'extremely', 'absolutely', 'totally', 'completely',
-        'utterly', 'seriously', 'literally', 'deeply', 'highly', 'super'
-    }
-    
-    # Negation words that flip sentiment
-    negations = {
-        'not', 'no', 'never', 'none', 'neither', 'nor', 'nothing', 'nowhere',
-        "isn't", "aren't", "wasn't", "weren't", "hasn't", "haven't", "hadn't",
-        "doesn't", "don't", "didn't", 'cannot', "can't", "couldn't"
-    }
-
-    text_lower = text.lower()
-    words = text_lower.split()
-    
-    # Initialize scores
-    pos_score = 0
-    neg_score = 0
-    
-    # Check for negative phrases first (they take precedence)
-    negative_phrases = [
-        'waste of', 'not worth', 'get worse', 'getting worse',
-        'gone downhill', 'going downhill', 'lost cause'
-    ]
-    for phrase in negative_phrases:
-        if phrase in text_lower:
-            neg_score += 2  # Strong negative weight for phrases
-    
-    # Analyze word by word with context
-    for i, word in enumerate(words):
-        prev_word = words[i-1] if i > 0 else ''
-        next_word = words[i+1] if i < len(words)-1 else ''
-        
-        # Check for intensified sentiment
-        intensity_multiplier = 1.5 if prev_word in intensifiers else 1.0
-        
-        # Check for negation (looking at previous words)
-        negation_window = words[max(0, i-3):i]
-        is_negated = any(neg in negation_window for neg in negations)
-        
-        if word in positive_words:
-            if is_negated:
-                neg_score += 1 * intensity_multiplier
-            else:
-                pos_score += 1 * intensity_multiplier
-        elif word in negative_words:
-            if is_negated:
-                pos_score += 0.5 * intensity_multiplier  # Negated negative is slightly positive
-            else:
-                neg_score += 1.5 * intensity_multiplier  # Negative words carry more weight
-        
-        # Check for informal negative expressions (they carry extra weight)
-        if word in {'sucks', 'garbage', 'trash', 'crap', 'rubbish'}:
-            neg_score += 2  # These are strongly negative
-    
-    # Additional checks for overall text characteristics
-    if '!' in text:
-        # Exclamation marks intensify the dominant sentiment
-        if neg_score > pos_score:
-            neg_score *= 1.2
-        elif pos_score > neg_score:
-            pos_score *= 1.2
-    
-    # Calculate final sentiment score (0 to 1, where 0 is most negative)
-    total_score = pos_score + neg_score
-    if total_score == 0:
-        return 0.5  # Neutral if no sentiment detected
-    
-    sentiment_score = pos_score / total_score
-    
-    # Adjust score based on overall text characteristics
-    if any(phrase in text_lower for phrase in negative_phrases):
-        sentiment_score *= 0.5  # Reduce score for negative phrases
-    
-    # Ensure the score stays within bounds
-    return max(0.0, min(1.0, sentiment_score))
-
-def get_sentiment_label(score: float) -> str:
-    """Get more precise sentiment labels"""
-    if score <= 0.2:
-        return 'very negative'
-    elif score <= 0.4:
-        return 'negative'
-    elif score <= 0.6:
-        return 'neutral'
-    elif score <= 0.8:
-        return 'positive'
-    else:
-        return 'very positive'
-
-def extract_aspects(text: str) -> List[str]:
-    """Extract key aspects from text"""
-    common_aspects = ['quality', 'price', 'service', 'delivery', 'features']
-    return [aspect for aspect in common_aspects if aspect in text.lower()]
-
-def generate_response(text: str, sentiment_score: float, context: str) -> str:
-    """Generate more detailed and contextual response"""
-    sentiment_label = get_sentiment_label(sentiment_score)
-    
-    # Enhanced response templates
-    templates = {
-        'positive': [
-            "Thank you for your positive feedback! We're delighted to hear that you're satisfied with our service.",
-            "We really appreciate your kind words and positive review!",
-            "Thank you for the great review! We're glad we could meet your expectations."
-        ],
-        'negative': [
-            "We apologize for any inconvenience you've experienced. Your feedback helps us improve.",
-            "We're sorry to hear about your experience. We take your feedback seriously and will work on improvements.",
-            "Thank you for bringing this to our attention. We apologize for not meeting your expectations."
-        ],
-        'neutral': [
-            "Thank you for your feedback. We appreciate your balanced perspective.",
-            "Thank you for taking the time to share your thoughts with us.",
-            "We value your feedback and will take your comments into consideration."
-        ]
-    }
-    
-    # Select a template based on sentiment and add variety
-    base_response = random.choice(templates[sentiment_label])
-    
-    # Add context if available
-    if context:
-        base_response += "\n\nBased on your review, here's some relevant information that might help:\n" + context
-    
-    return base_response
 
 def format_faq_context(faqs: List[Dict[str, str]]) -> str:
-    """Format FAQ entries into readable context"""
-    if not faqs:
-        return ""
-    
-    formatted = []
-    for i, faq in enumerate(faqs, 1):
-        relevance_percent = int(faq.get('relevance', 0) * 100)
-        formatted.append(
-            f"Related Question {i}:\n"
-            f"Q: {faq.get('question', '')}\n"
-            f"A: {faq.get('answer', '')}\n"
-            f"Relevance: {relevance_percent}%"
-        )
-    
-    return "\n\n".join(formatted)
-
-class ContextManager:
-    def __init__(self):
-        self.faq_data = None
-        self.question_list = None
-        self.encoder = None
-        self.faiss_index = None
-        self.initialize()
-
-    def initialize(self):
-        """Initialize FAQ index and other resources"""
-        try:
-            # Load FAQ data from CSV
-            csv_path = os.path.join('data', 'faq.csv')
-            if not os.path.exists(csv_path):
-                logger.warning(f"FAQ file not found at {csv_path}")
-                return False
-                
-            self.faq_data = pd.read_csv(csv_path)
-            logger.info(f"Loaded FAQ data with shape: {self.faq_data.shape}")
-            
-            # Store questions separately
-            self.question_list = self.faq_data['User Query'].tolist()
-            if not self.question_list:
-                logger.warning("No questions found in FAQ data")
-                return False
-                
-            logger.info(f"Number of questions loaded: {len(self.question_list)}")
-            
-            # Initialize sentence transformer
-            self.encoder = SentenceTransformer('paraphrase-MiniLM-L3-v2')
-            
-            # Create embeddings
-            embeddings = self.encoder.encode(self.question_list, convert_to_tensor=True)
-            embeddings = embeddings.cpu().numpy().astype('float32')
-            
-            # Initialize FAISS index
-            dimension = embeddings.shape[1]
-            self.faiss_index = faiss.IndexFlatL2(dimension)
-            self.faiss_index.add(embeddings)
-            
-            logger.info(f"FAISS index created with {self.faiss_index.ntotal} vectors")
-            return True
-        except Exception as e:
-            logger.error(f"Error initializing FAQ index: {str(e)}")
-            return False
-
-    def get_relevant_faqs(self, query: str, k: int = 3) -> List[Dict[str, str]]:
-        """Get relevant FAQ entries based on the query text"""
-        try:
-            if not all([self.faq_data is not None, self.question_list, self.encoder, self.faiss_index]):
-                if not self.initialize():
-                    logger.warning("Failed to initialize FAQ index")
-                    return []
-            
-            # Get number of FAQs from FAISS index
-            num_faqs = self.faiss_index.ntotal
-            if num_faqs == 0:
-                logger.warning("No FAQ entries in FAISS index")
-                return []
-            
-            # Encode query
-            query_embedding = self.encoder.encode([query], convert_to_tensor=True)
-            query_embedding = query_embedding.cpu().numpy().astype('float32')
-            
-            # Search
-            k = min(k, num_faqs)
-            distances, indices = self.faiss_index.search(query_embedding, k)
-            
-            # Process results
-            relevant_faqs = []
-            max_distance = 1.5  # Threshold for relevance
-            
-            for dist, idx in zip(distances[0], indices[0]):
-                if dist > max_distance:
-                    continue
-                    
-                if 0 <= idx < len(self.faq_data):
-                    relevant_faqs.append({
-                        'question': self.faq_data.iloc[idx]['User Query'],
-                        'answer': self.faq_data.iloc[idx]['Product Responses'],
-                        'relevance': float(1.0 - (dist / 2.0))  # Convert distance to relevance
-                    })
-            
-            logger.info(f"Found {len(relevant_faqs)} relevant FAQs")
-            return relevant_faqs
-        
-        except Exception as e:
-            logger.error(f"Error in FAQ search: {str(e)}")
-            return []
-
-    def format_faq_context(self, faqs: List[Dict[str, str]]) -> str:
-        """Format FAQ entries into readable context"""
+    """Format FAQ entries into a context string"""
+    try:
         if not faqs:
             return ""
         
-        formatted = []
-        for i, faq in enumerate(faqs, 1):
-            relevance_percent = int(faq.get('relevance', 0) * 100)
-            formatted.append(
-                f"Related Question {i}:\n"
-                f"Q: {faq.get('question', '')}\n"
-                f"A: {faq.get('answer', '')}\n"
-                f"Relevance: {relevance_percent}%"
-            )
+        context_parts = []
+        for faq in faqs:
+            q = faq.get('question', '').strip()
+            a = faq.get('answer', '').strip()
+            if q and a:
+                context_parts.append(f"Q: {q}\nA: {a}")
         
-        return "\n\n".join(formatted)
+        return "\n\n".join(context_parts)
+        
+    except Exception as e:
+        logger.error(f"Error formatting FAQ context: {str(e)}")
+        return ""
 
-# Create a global instance of ContextManager
-context_manager = ContextManager()
+# Initialize FAQ index on module load
+load_faq_index()
+
+class SentimentAnalyzer:
+    """Class to handle sentiment analysis using both rule-based and OpenAI approaches"""
+    
+    def __init__(self):
+        # Performance and technical issues
+        self.performance_keywords = [
+            'slow', 'lag', 'loading', 'load time', 'performance', 'speed',
+            'freeze', 'crash', 'unresponsive', 'delay', 'waiting',
+            'frustrating', 'annoying', 'terrible', 'awful', 'horrible',
+            'bug', 'error', 'issue', 'problem', 'not working'
+        ]
+        
+        self.performance_phrases = [
+            'takes forever', 'too slow', 'very slow', 'extremely slow',
+            'unbearably slow', 'painfully slow', 'ridiculously slow',
+            'losing patience', 'frustrated with', 'annoyed by',
+            'keeps crashing', 'always crashes', 'frequently crashes',
+            'constant issues', 'regular problems'
+        ]
+        
+        # User experience and satisfaction
+        self.positive_keywords = [
+            'fast', 'quick', 'responsive', 'smooth', 'efficient',
+            'excellent', 'great', 'good', 'amazing', 'wonderful',
+            'love', 'perfect', 'best', 'outstanding', 'impressive',
+            'easy', 'simple', 'intuitive', 'user-friendly', 'helpful'
+        ]
+        
+        self.negative_keywords = [
+            'bad', 'poor', 'terrible', 'awful', 'horrible',
+            'frustrating', 'annoying', 'disappointing', 'unacceptable',
+            'worst', 'hate', 'dislike', 'problem', 'issue',
+            'difficult', 'complicated', 'confusing', 'hard to use'
+        ]
+        
+        # Emotional context
+        self.emotional_keywords = {
+            'frustration': ['frustrated', 'annoyed', 'angry', 'upset', 'disappointed'],
+            'satisfaction': ['happy', 'pleased', 'satisfied', 'delighted', 'impressed'],
+            'confusion': ['confused', 'lost', 'uncertain', 'unsure', 'puzzled'],
+            'urgency': ['urgent', 'critical', 'important', 'emergency', 'immediate']
+        }
+        
+        # Feature-specific feedback
+        self.feature_keywords = {
+            'ui': ['interface', 'design', 'layout', 'look', 'appearance'],
+            'functionality': ['feature', 'function', 'capability', 'ability', 'option'],
+            'support': ['help', 'support', 'assistance', 'customer service', 'service'],
+            'performance': ['speed', 'performance', 'loading', 'response time', 'lag']
+        }
+        
+        self.intensifiers = [
+            'very', 'extremely', 'absolutely', 'completely', 'totally',
+            'really', 'so', 'too', 'incredibly', 'unbelievably'
+        ]
+        
+        self.negations = [
+            'not', 'no', 'never', 'none', 'neither', 'nor',
+            'doesn\'t', 'don\'t', 'won\'t', 'can\'t', 'couldn\'t'
+        ]
+        
+        # Load OpenAI config
+        self.load_openai_config()
+
+    def load_openai_config(self) -> None:
+        """Load OpenAI configuration from file"""
+        try:
+            config_file = Path('config/openai_sentiment_config.json')
+            if config_file.exists():
+                with open(config_file) as f:
+                    self.openai_config = json.load(f)
+            else:
+                self.openai_config = {
+                    'model': 'gpt-3.5-turbo',
+                    'temperature': 0.3,
+                    'max_tokens': 150,
+                    'system_prompt': 'You are a sentiment analysis expert. Analyze the review and provide accurate sentiment analysis.',
+                    'response_format': {
+                        'label': 'sentiment_label',
+                        'score': 'confidence_score',
+                        'issues': {
+                            'performance': 'boolean',
+                            'support': 'boolean',
+                            'features': 'boolean',
+                            'other': 'boolean'
+                        }
+                    }
+                }
+        except Exception as e:
+            logger.error(f"Error loading OpenAI config: {str(e)}")
+            self.openai_config = {
+                'model': 'gpt-3.5-turbo',
+                'temperature': 0.3,
+                'max_tokens': 150,
+                'system_prompt': 'You are a sentiment analysis expert. Analyze the review and provide accurate sentiment analysis.',
+                'response_format': {
+                    'label': 'sentiment_label',
+                    'score': 'confidence_score',
+                    'issues': {
+                        'performance': 'boolean',
+                        'support': 'boolean',
+                        'features': 'boolean',
+                        'other': 'boolean'
+                    }
+                }
+            }
+
+    def verify_with_openai(self, text: str, initial_sentiment: Dict[str, Any]) -> Dict[str, Any]:
+        """Verify sentiment with OpenAI"""
+        try:
+            prompt = f"""Analyze the sentiment of this review and verify if it's correct:
+            Review: "{text}"
+            Initial Analysis: {initial_sentiment}
+            
+            Please provide:
+            1. Final sentiment label (very_positive, positive, neutral, negative, very_negative)
+            2. Confidence score (0.0 to 1.0)
+            3. Key issues identified (if any)
+            
+            Format your response as JSON with these fields:
+            {{
+                "label": "sentiment_label",
+                "score": confidence_score,
+                "issues": {{
+                    "performance": boolean,
+                    "support": boolean,
+                    "features": boolean,
+                    "other": boolean
+                }}
+            }}"""
+
+            response = openai_client.chat.completions.create(
+                model=self.openai_config['model'],
+                messages=[
+                    {"role": "system", "content": self.openai_config['system_prompt']},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=self.openai_config['temperature'],
+                max_tokens=self.openai_config['max_tokens']
+            )
+
+            # Parse the response
+            result = json.loads(response.choices[0].message.content)
+            
+            # If OpenAI detects performance issues, ensure it's marked as negative
+            if result.get('issues', {}).get('performance', False):
+                result['label'] = 'negative'
+                result['score'] = min(result.get('score', 0.5), 0.3)
+            
+            return result
+
+        except Exception as e:
+            logger.error(f"Error verifying sentiment with OpenAI: {str(e)}")
+            return initial_sentiment
+
+    def analyze_sentiment(self, text: str) -> Dict[str, Any]:
+        """Analyze sentiment of a review text"""
+        try:
+            # Convert to lowercase for case-insensitive matching
+            text_lower = text.lower()
+            
+            # Initialize sentiment analysis result
+            sentiment_result = {
+                'label': 'neutral',
+                'score': 0.5,
+                'issues': {},
+                'context': {
+                    'emotions': [],
+                    'features': [],
+                    'urgency': False
+                }
+            }
+            
+            # Check for performance issues
+            has_performance_issue = any(keyword in text_lower for keyword in self.performance_keywords)
+            has_performance_phrase = any(phrase in text_lower for phrase in self.performance_phrases)
+            
+            # Analyze emotional context
+            for emotion, keywords in self.emotional_keywords.items():
+                if any(keyword in text_lower for keyword in keywords):
+                    sentiment_result['context']['emotions'].append(emotion)
+            
+            # Analyze feature-specific feedback
+            for feature, keywords in self.feature_keywords.items():
+                if any(keyword in text_lower for keyword in keywords):
+                    sentiment_result['context']['features'].append(feature)
+            
+            # Check for urgency
+            sentiment_result['context']['urgency'] = any(
+                keyword in text_lower for keyword in self.emotional_keywords['urgency']
+            )
+            
+            # Count positive and negative keywords
+            positive_count = sum(1 for word in self.positive_keywords if word in text_lower)
+            negative_count = sum(1 for word in self.negative_keywords if word in text_lower)
+            
+            # Check for intensifiers and negations
+            has_intensifier = any(word in text_lower for word in self.intensifiers)
+            has_negation = any(word in text_lower for word in self.negations)
+            
+            # Calculate base sentiment score
+            if positive_count > negative_count:
+                base_score = 0.7
+            elif negative_count > positive_count:
+                base_score = 0.3
+            else:
+                base_score = 0.5
+            
+            # Adjust score based on intensifiers and negations
+            if has_intensifier:
+                if base_score > 0.5:
+                    base_score = min(1.0, base_score + 0.2)
+                else:
+                    base_score = max(0.0, base_score - 0.2)
+            
+            if has_negation:
+                base_score = 1.0 - base_score  # Invert the sentiment
+            
+            # If performance issue is mentioned, consider it negative
+            if has_performance_issue or has_performance_phrase:
+                base_score = min(base_score, 0.3)
+                sentiment_result['issues']['performance'] = True
+            
+            # Determine sentiment label
+            if base_score >= 0.8:
+                sentiment_result['label'] = 'very_positive'
+            elif base_score >= 0.6:
+                sentiment_result['label'] = 'positive'
+            elif base_score >= 0.4:
+                sentiment_result['label'] = 'neutral'
+            elif base_score >= 0.2:
+                sentiment_result['label'] = 'negative'
+            else:
+                sentiment_result['label'] = 'very_negative'
+            
+            sentiment_result['score'] = base_score
+            
+            # Verify with OpenAI
+            return self.verify_with_openai(text, sentiment_result)
+            
+        except Exception as e:
+            logger.error(f"Error analyzing sentiment: {str(e)}")
+            return {
+                'label': 'neutral',
+                'score': 0.5,
+                'issues': {},
+                'context': {
+                    'emotions': [],
+                    'features': [],
+                    'urgency': False
+                }
+            }
+
+# Create global instance of SentimentAnalyzer
+sentiment_analyzer = SentimentAnalyzer()
+
+def generate_response(
+    text: str,
+    sentiment_analysis: Dict[str, Any],
+    settings: Dict[str, Any]
+) -> str:
+    """Generate response based on analysis and past successful responses"""
+    try:
+        # Find similar past responses
+        similar_responses = response_db.find_similar_responses(text)
+        
+        # If we have good similar responses, use them as examples
+        response_examples = ""
+        if similar_responses:
+            response_examples = "\n\nHere are some successful past responses to similar reviews:\n" + \
+                "\n".join([f"Example {i+1}: {r['response']}" for i, r in enumerate(similar_responses)])
+        
+        # Build the prompt
+        prompt_parts = [
+            {
+                "role": "system",
+                "content": f"""You are a highly skilled customer service representative responding to app reviews. 
+                Your task is to generate a helpful, empathetic response addressing the user's concerns.
+
+                Response Style Guidelines:
+                - Empathy Level: {settings.get('empathy_level', 3)}/5 (higher means more empathetic)
+                - Creativity Level: {settings.get('creativity_level', 3)}/5 (higher means more creative language)
+                - {'' if settings.get('include_personal_experience') else 'Do not '}include personal experiences
+                - {'' if settings.get('include_examples') else 'Do not '}include examples
+                - {'' if settings.get('include_metaphors') else 'Do not '}use metaphors
+                
+                If relevant, use this FAQ information:
+                {format_faq_context(get_relevant_faqs(text))}
+
+                {response_examples}
+
+                Response Guidelines:
+                1. Start with an appropriate greeting and acknowledgment
+                2. Address specific issues mentioned in the review
+                3. Provide clear, actionable solutions
+                4. Match your tone to the sentiment of the review
+                5. Be concise but thorough
+                6. End with a positive, forward-looking statement
+                """
+            },
+            {
+                "role": "user",
+                "content": f"""Review Text: {text}
+
+                Sentiment Analysis:
+                - Overall Sentiment: {sentiment_analysis.get('label', 'neutral')}
+                - Sentiment Score: {sentiment_analysis.get('score', 0.5)}
+                - Detected Issues: {', '.join(k for k, v in sentiment_analysis.get('issues', {}).items() if v)}
+
+                Please generate an appropriate response to this review, taking inspiration from the successful past responses if provided."""
+            }
+        ]
+        
+        # Generate response using OpenAI
+        response = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=prompt_parts,
+            temperature=min(0.3 + (settings.get('creativity_level', 3) * 0.1), 0.9),
+            max_tokens=500,
+            presence_penalty=0.1,
+            frequency_penalty=0.1
+        )
+        
+        generated_text = response.choices[0].message.content.strip()
+        
+        # Update use count for similar responses that were used
+        if similar_responses:
+            for r in similar_responses:
+                r['use_count'] = r.get('use_count', 0) + 1
+            
+        return generated_text
+            
+    except Exception as e:
+        logger.error(f"Error generating response: {e}")
+        return f"""I apologize, but I encountered an error while generating a response. 
+        
+Our team has been notified and is working to resolve this issue. In the meantime, please:
+1. Try submitting your review again
+2. Contact our support team directly at support@example.com
+3. Visit our help center at help.example.com
+
+Error details: {str(e)}"""
 
 @celery.task
 def process_review_task(
@@ -1078,153 +612,236 @@ def process_review_task(
     include_examples: bool = False,
     include_metaphors: bool = False
 ) -> Dict[str, Union[str, Dict]]:
-    """Process a review with enhanced context and response generation"""
+    """Process a review and generate a response."""
     try:
-        # Get relevant FAQs using context manager
-        relevant_faqs = context_manager.get_relevant_faqs(review_text)
-        faq_context = context_manager.format_faq_context(relevant_faqs)
+        # Generate a unique review ID
+        review_id = str(uuid.uuid4())
         
-        # Analyze sentiment and authenticity
-        sentiment_score = analyze_sentiment(review_text)
-        authenticity_analysis = analyze_review_authenticity(review_text)
-        bot_analysis = analyze_bot_patterns(review_text)
+        # Initialize sentiment analyzer if needed
+        sentiment_analyzer = SentimentAnalyzer()
         
-        # Get feedback history
-        feedback_history = get_feedback_history(review_text)
+        # Analyze sentiment
+        sentiment_analysis = sentiment_analyzer.analyze_sentiment(review_text)
         
-        # Format prompt with all context
-        prompt = format_prompt_with_context(
-            {'text': review_text},  # Pass as dictionary with 'text' key
-            faq_context,
-            feedback_history,
-            authenticity_analysis,
-            bot_analysis
+        # Generate response first
+        response = generate_response(
+            text=review_text,
+            sentiment_analysis=sentiment_analysis,
+            settings={
+                'empathy_level': empathy_level,
+                'creativity_level': creativity_level,
+                'include_personal_experience': include_personal_experience,
+                'include_examples': include_examples,
+                'include_metaphors': include_metaphors
+            }
         )
         
-        try:
-            # Generate response using LLM
-            llm_client = get_llm_client()
-            completion = llm_client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "You are a helpful customer service agent."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7
-            )
-            
-            # Properly access the response content
-            response = completion.choices[0].message.content if completion.choices else "No response generated."
-            
-        except Exception as e:
-            logger.error(f"Error generating LLM response: {str(e)}")
-            response = "I apologize, but I encountered an error generating a response."
+        # Now analyze the generated response for bot-like patterns
+        bot_analysis = bot_detector.analyze_response(
+            response_text=response,  # Analyze the generated response
+            review_text=review_text,
+            previous_responses=[]  # Optionally get previous responses from the database
+        )
         
-        # Prepare the result dictionary with proper type checking
-        result = {
-            'sentiment': {
-                'label': get_sentiment_label(sentiment_score),
-                'score': float(sentiment_score),  # Ensure it's a float
-            },
-            'authenticity': authenticity_analysis if isinstance(authenticity_analysis, dict) else {},
-            'bot_analysis': bot_analysis if isinstance(bot_analysis, dict) else {},
-            'response': str(response),  # Ensure it's a string
-            'context': str(faq_context),  # Ensure it's a string
-            'faqs_used': [
-                str(faq.get('question', '')) for faq in relevant_faqs 
-                if isinstance(faq, dict)
-            ]
+        logger.info(f"Bot analysis results: {bot_analysis}")
+        
+        # Convert boolean values to integers for JSON serialization
+        bot_analysis['is_likely_bot'] = 1 if bot_analysis.get('is_likely_bot', True) else 0
+        
+        # Ensure scores are properly formatted
+        if 'scores' in bot_analysis:
+            bot_analysis['scores'] = {
+                k: float(v) for k, v in bot_analysis['scores'].items()
+            }
+        
+        # Save response with feedback data
+        feedback_data = {
+            'empathy_score': empathy_level,
+            'relevance_score': 3,  # Default value
+            'helpfulness_score': 3,  # Default value
+            'is_good': True,  # Assume good until feedback received
+            'timestamp': datetime.now().isoformat()
         }
         
-        # Log successful processing
-        logger.info(f"Successfully processed review with {len(relevant_faqs)} relevant FAQs")
+        # Save to response database
+        response_db.save_response(
+            review_text=review_text,
+            response=response,
+            feedback_data=feedback_data
+        )
         
+        result = {
+            'review_id': review_id,
+            'response': response,
+            'sentiment': sentiment_analysis,
+            'bot_analysis': bot_analysis,
+            'success': 1,
+            'error': None
+        }
+        
+        logger.info(f"Task result: {result}")
         return result
         
     except Exception as e:
         logger.error(f"Error processing review: {str(e)}")
-        # Return a safe fallback response
         return {
-            'sentiment': {'label': 'neutral', 'score': 0.5},
-            'authenticity': {},
-            'bot_analysis': {},
-            'response': "I apologize, but I encountered an error processing your review.",
-            'context': "",
-            'faqs_used': []
+            'review_id': None,
+            'response': None,
+            'sentiment': None,
+            'bot_analysis': None,
+            'success': 0,
+            'error': str(e)
         }
 
-def get_sentiment_label(score: float) -> str:
-    """Get sentiment label from score"""
-    if score <= 0.2:
-        return 'very negative'
-    elif score <= 0.4:
-        return 'negative'
-    elif score <= 0.6:
-        return 'neutral'
-    elif score <= 0.8:
-        return 'positive'
-    else:
-        return 'very positive'
+def calculate_bot_detection_metrics(review_text: str) -> Dict[str, Any]:
+    """
+    Calculate metrics to detect potential bot-generated reviews.
 
-def format_faq_context(faqs: List[Dict[str, str]]) -> str:
-    """Format FAQ entries into readable context"""
-    if not faqs:
-        return ""
-    
-    formatted = []
-    for i, faq in enumerate(faqs, 1):
-        relevance_percent = int(faq.get('relevance', 0) * 100)
-        formatted.append(
-            f"Related Question {i}:\n"
-            f"Q: {faq.get('question', '')}\n"
-            f"A: {faq.get('answer', '')}\n"
-            f"Relevance: {relevance_percent}%"
-        )
-    
-    return "\n\n".join(formatted)
+    Args:
+        review_text (str): The review text to analyze
 
-def generate_response(
-    text: str,
-    sentiment_score: float,
-    analysis: Dict[str, Any],
-    faq_context: str,
-    settings: Dict[str, Any]
-) -> str:
-    """Generate response based on analysis"""
+    Returns:
+        Dict[str, Any]: Dictionary containing bot detection metrics
+    """
+    if not review_text:
+        return {
+            'is_likely_bot': False,
+            'confidence': 0.0,
+            'metrics': {},
+            'flags': []
+        }
+    
+    # Initialize metrics
+    metrics = {}
+    flags = []
+    
+    # 1. Text length analysis
+    metrics['text_length'] = len(review_text)
+    if metrics['text_length'] < 10:
+        flags.append('very_short_text')
+    elif metrics['text_length'] > 2000:
+        flags.append('unusually_long_text')
+    
+    # 2. Repetition analysis
+    words = re.findall(r'\b\w+\b', review_text.lower())
+    word_counts = Counter(words)
+    
+    # Calculate word repetition ratio
+    unique_words = len(word_counts)
+    total_words = len(words)
+    metrics['unique_word_ratio'] = unique_words / total_words if total_words > 0 else 0
+    
+    if metrics['unique_word_ratio'] < 0.4:
+        flags.append('high_word_repetition')
+    
+    # 3. Pattern detection
+    # Check for repeated punctuation
+    if re.search(r'([!?.])\1{2,}', review_text):
+        flags.append('repeated_punctuation')
+    
+    # Check for excessive capitalization
+    caps_ratio = sum(1 for c in review_text if c.isupper()) / len(review_text) if review_text else 0
+    metrics['caps_ratio'] = caps_ratio
+    if caps_ratio > 0.5:
+        flags.append('excessive_caps')
+    
+    # 4. Spam patterns
+    spam_patterns = [
+        r'\b(buy|sell|discount|offer|price|deal|order|purchase)\b.*\b(now|today|limited|exclusive)\b',
+        r'https?://\S+',
+        r'\b\d+%\s*(off|discount)\b',
+        r'\b(click|visit|check|see)\b.*\b(link|site|page|website)\b'
+    ]
+    
+    for pattern in spam_patterns:
+        if re.search(pattern, review_text.lower()):
+            flags.append('promotional_content')
+            break
+    
+    # 5. Time pattern analysis
+    # Check for timestamp-like patterns that bots might leave
+    if re.search(r'\b\d{2}:\d{2}(:\d{2})?\b', review_text):
+        flags.append('contains_timestamp')
+    
+    # Calculate overall bot likelihood
+    num_flags = len(flags)
+    confidence = min(0.1 * num_flags, 1.0)  # 10% per flag, max 100%
+    
+    # Determine if likely bot based on flags and metrics
+    is_likely_bot = (
+        num_flags >= 3 or  # Multiple suspicious patterns
+        metrics['unique_word_ratio'] < 0.3 or  # Extremely repetitive
+        ('promotional_content' in flags and num_flags >= 2)  # Promotional content with other flags
+    )
+    
+    return {
+        'is_likely_bot': is_likely_bot,
+        'confidence': confidence,
+        'metrics': metrics,
+        'flags': flags
+    }
+
+@celery.task(name='tasks.process_feedback')
+def process_feedback(review_id: str, response: str, feedback_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Process feedback for a generated response.
+    
+    Args:
+        review_id (str): Unique identifier for the review
+        response (str): The generated response that received feedback
+        feedback_data (Dict[str, Any]): Dictionary containing feedback metrics and comments
+        
+    Returns:
+        Dict[str, Any]: Processing result
+    """
     try:
-        # Base templates with varying empathy levels
-        templates = {
-            1: "Thank you for your feedback. {}",
-            2: "We appreciate your feedback. {}",
-            3: "Thank you for sharing your thoughts. {}",
-            4: "We truly appreciate you taking the time to share this. {}",
-            5: "We're grateful you've shared this with us, and we completely understand how you feel. {}"
+        # Log the feedback
+        logger.info(f"Processing feedback for review {review_id}")
+        logger.info(f"Feedback data: {feedback_data}")
+        
+        # Extract feedback metrics
+        empathy_score = feedback_data.get('empathy_score', 3)
+        relevance_score = feedback_data.get('relevance_score', 3)
+        helpfulness_score = feedback_data.get('helpfulness_score', 3)
+        is_good = feedback_data.get('is_good', False)
+        comments = feedback_data.get('comments', '')
+        
+        # Store feedback in a CSV file
+        feedback_file = Path('data/feedback.csv')
+        feedback_file.parent.mkdir(exist_ok=True)
+        
+        # Prepare feedback entry
+        feedback_entry = {
+            'review_id': review_id,
+            'timestamp': datetime.now().isoformat(),
+            'response': response,
+            'empathy_score': empathy_score,
+            'relevance_score': relevance_score,
+            'helpfulness_score': helpfulness_score,
+            'is_good': is_good,
+            'comments': comments
         }
         
-        empathy_level = settings.get('empathy_level', 3)
-        base_template = templates.get(empathy_level, templates[3])
+        # Append to CSV
+        df = pd.DataFrame([feedback_entry])
+        if not feedback_file.exists():
+            df.to_csv(feedback_file, index=False)
+        else:
+            df.to_csv(feedback_file, mode='a', header=False, index=False)
         
-        components = []
+        return {
+            'status': 'success',
+            'message': 'Feedback processed successfully',
+            'review_id': review_id
+        }
         
-        # Add emotion-based response
-        if analysis['primary_emotion'] in ['angry', 'frustrated']:
-            components.append("We understand your frustration and we're here to help.")
-        elif analysis['primary_emotion'] == 'disappointed':
-            components.append("We apologize for not meeting your expectations.")
-        
-        # Add key points response
-        if analysis['key_points']:
-            for point in analysis['key_points']:
-                components.append(f"Regarding your point about {point}, we're taking note of this feedback.")
-        
-        # Add FAQ context if available
-        if faq_context:
-            components.append("\nHere's some relevant information that might help:\n" + faq_context)
-        
-        # Combine all components
-        response_body = " ".join(components)
-        
-        return base_template.format(response_body)
     except Exception as e:
-        logger.error(f"Error generating response: {e}")
-        return "We apologize, but we encountered an error generating the response."
+        logger.error(f"Error processing feedback: {str(e)}")
+        return {
+            'status': 'error',
+            'message': f'Error processing feedback: {str(e)}',
+            'review_id': review_id
+        }
+
+if __name__ == '__main__':
+    celery.start()

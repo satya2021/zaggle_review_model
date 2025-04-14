@@ -1,17 +1,131 @@
+:root {
+    --primary-red: #dc3545;
+    --primary-red-dark: #b02a37;
+    --primary-red-light: #ff4d5e;
+    --neutral-dark: #343a40;
+    --neutral-light: #f8f9fa;
+    --success-green: #198754;
+    --warning-yellow: #ffc107;
+    --danger-red: #dc3545;
+}
+
+/* Main theme colors */
+.navbar-dark {
+    background-color: var(--neutral-dark) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-red);
+    border-color: var(--primary-red);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-red-dark);
+    border-color: var(--primary-red-dark);
+}
+
+.btn-outline-primary {
+    color: var(--primary-red);
+    border-color: var(--primary-red);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-red);
+    border-color: var(--primary-red);
+}
+
+/* Form controls */
 .form-range::-webkit-slider-thumb {
-    background: #0d6efd;
+    background-color: var(--primary-red);
 }
 
 .form-range::-moz-range-thumb {
-    background: #0d6efd;
+    background-color: var(--primary-red);
 }
 
+.form-control:focus {
+    border-color: var(--primary-red-light);
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+/* Card styling */
+.card-header {
+    background-color: var(--neutral-light);
+    border-bottom: 2px solid var(--primary-red);
+}
+
+/* Sentiment badges */
+.sentiment-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-weight: 500;
+    color: white;
+}
+
+.sentiment-very-positive {
+    background-color: #2ecc71; /* Emerald green */
+}
+
+.sentiment-positive {
+    background-color: #27ae60; /* Nephritis green */
+}
+
+.sentiment-neutral {
+    background-color: #7f8c8d; /* Asbestos gray */
+}
+
+.sentiment-negative {
+    background-color: #e74c3c; /* Alizarin red */
+}
+
+.sentiment-very-negative {
+    background-color: #c0392b; /* Pomegranate red */
+}
+
+/* Response container */
 .response-text {
     white-space: pre-wrap;
     font-size: 1rem;
     line-height: 1.6;
+    padding: 1.5rem;
+    background-color: var(--neutral-light);
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--primary-red);
+    min-height: 200px; /* Minimum height for the response box */
+    max-height: 500px; /* Maximum height before scrolling */
+    overflow-y: visible; /* Add scrolling for long responses */
 }
 
+/* Feedback section */
+#feedbackContainer {
+    border-top: 3px solid var(--primary-red);
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    display: none; /* Initially hidden */
+}
+
+.rating-container button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-red);
+    color: var(--primary-red);
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.rating-container button:hover {
+    background-color: var(--primary-red);
+    color: white;
+    transform: scale(1.1);
+}
+
+.rating-container button.active {
+    background-color: var(--primary-red);
+    color: white;
+}
+
+/* Animation */
 .fade-in {
     animation: fadeIn 0.5s ease-in;
 }
@@ -19,6 +133,40 @@
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+/* Progress bars */
+.progress-bar {
+    background-color: var(--primary-red);
+}
+
+/* Alert customization */
+.alert-success {
+    border-left: 4px solid var(--success-green);
+}
+
+.alert-warning {
+    border-left: 4px solid var(--warning-yellow);
+}
+
+.alert-danger {
+    border-left: 4px solid var(--danger-red);
+}
+
+.response-text p {
+    margin-bottom: 1rem;
+}
+
+.response-text li {
+    margin-bottom: 0.5rem;
+}
+
+.response-text .list-group-item {
+    background: transparent;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    padding: 0.5rem 0;
 }
 
 .tone-indicator {
@@ -38,33 +186,16 @@
     border-radius: 4px;
 }
 
-.rating-container button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    padding: 0;
-    line-height: 40px;
-    text-align: center;
+#feedbackContainer .btn {
+    transition: all 0.2s ease-in-out;
 }
 
-.rating-container button:hover {
-    transform: scale(1.1);
-    transition: transform 0.2s;
+#feedbackContainer .btn:hover {
+    transform: scale(1.05);
 }
 
-#feedbackContainer {
-    animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+#feedbackContainer .btn:active {
+    transform: scale(0.95);
 }
 
 .sentiment-analysis {
@@ -98,4 +229,124 @@
 
 .issues i {
     color: #dc3545;
+}
+
+.feedback-success {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Bot analysis styles */
+#botAnalysisSection {
+    margin-top: 1rem;
+}
+
+.score-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.score-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.score-label {
+    min-width: 150px;
+    text-transform: capitalize;
+}
+
+.score-item .progress {
+    flex-grow: 1;
+    height: 10px;
+    background-color: var(--neutral-light);
+}
+
+.score-item .progress-bar {
+    transition: width 0.3s ease;
+}
+
+#botFlags .alert {
+    margin-bottom: 0;
+}
+
+#botFlags .bi {
+    font-size: 1.1em;
+}
+
+/* Score badges */
+.score-item .badge {
+    padding: 0.5em 1em;
+    font-weight: 500;
+}
+
+/* Icons in alerts */
+.alert i {
+    font-size: 1.1em;
+    vertical-align: middle;
+}
+
+/* Bot detection badge styles */
+#botDetectionBadge {
+    font-size: 0.9rem;
+    padding: 0.5em 0.85em;
+}
+
+#botDetectionBadge i {
+    margin-right: 0.5em;
+}
+
+/* Score item styles */
+.score-item {
+    padding: 0.5rem 0;
+}
+
+.score-item .badge {
+    font-size: 0.85rem;
+    padding: 0.5em 0.85em;
+}
+
+/* Alert icon styles */
+.alert i.fs-4 {
+    font-size: 1.5rem !important;
+}
+
+/* Feedback animations */
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+/* Feedback button states */
+#feedbackContainer .btn {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+#feedbackContainer .btn:disabled {
+    opacity: 0.7;
+}
+
+#feedbackContainer .btn .spinner-border {
+    margin-right: 0.5rem;
+}
+
+/* Alert container */
+#alertContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 350px;
+}
+
+.alert {
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 } 

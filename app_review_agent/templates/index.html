@@ -105,17 +105,21 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="sentiment-label mb-2">
-                            Label: <span id="sentimentLabel" class="badge"></span>
+                        <div class="sentiment-label mb-3">
+                            <label class="form-label">Sentiment:</label>
+                            <div>
+                                <span id="sentimentLabel" class="sentiment-badge"></span>
+                            </div>
                         </div>
-                        <div class="sentiment-score mb-2">
-                            Score: <span id="sentimentScore"></span>
+                        <div class="sentiment-score mb-3">
+                            <label class="form-label">Confidence Score:</label>
+                            <div id="sentimentScore"></div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="sentiment-aspects">
-                            <h6>Key Aspects:</h6>
-                            <p id="sentimentAspects" class="mb-0"></p>
+                            <label class="form-label">Detected Issues:</label>
+                            <div id="sentimentAspects" class="mt-2"></div>
                         </div>
                     </div>
                 </div>
@@ -140,7 +144,20 @@
             </div>
         </div>
 
-        <!-- Add this after the response container -->
+        <!-- Add this after the response container but before the feedback container -->
+        <div id="botAnalysisSection" class="card mb-4" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-check"></i> Response Analysis
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="botScores"></div>
+                <div id="botFlags"></div>
+            </div>
+        </div>
+
+        <!-- Add this after the confidence section -->
         <div id="feedbackContainer" class="card mb-4" style="display: none;">
             <div class="card-header">
                 <h5 class="mb-0">
@@ -149,21 +166,15 @@
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label class="form-label">How helpful was this response?</label>
-                    <div class="rating-container d-flex gap-2">
-                        <button class="btn btn-outline-primary" onclick="rateResponse(1)">1</button>
-                        <button class="btn btn-outline-primary" onclick="rateResponse(2)">2</button>
-                        <button class="btn btn-outline-primary" onclick="rateResponse(3)">3</button>
-                        <button class="btn btn-outline-primary" onclick="rateResponse(4)">4</button>
-                        <button class="btn btn-outline-primary" onclick="rateResponse(5)">5</button>
-                    </div>
-                </div>
-
-                <div class="mb-3">
                     <label class="form-label">Rate the empathy level:</label>
                     <div class="d-flex gap-2 mb-2">
                         <input type="range" class="form-range" id="empathyScore" 
                                min="1" max="5" value="3">
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Low</span>
+                        <span>Medium</span>
+                        <span>High</span>
                     </div>
                 </div>
 
@@ -172,6 +183,24 @@
                     <div class="d-flex gap-2 mb-2">
                         <input type="range" class="form-range" id="relevanceScore" 
                                min="1" max="5" value="3">
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Not Relevant</span>
+                        <span>Somewhat</span>
+                        <span>Very Relevant</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">How helpful was this response?</label>
+                    <div class="d-flex gap-2 mb-2">
+                        <input type="range" class="form-range" id="helpfulnessScore" 
+                               min="1" max="5" value="3">
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Not Helpful</span>
+                        <span>Somewhat</span>
+                        <span>Very Helpful</span>
                     </div>
                 </div>
 

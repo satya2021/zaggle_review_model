@@ -1,0 +1,28 @@
+review_id,timestamp,review_text,response,empathy_score,relevance_score,helpfulness_score,is_good,comments
+77dc58c4-00ea-4d85-8284-a230fae3dd66,2025-04-13T10:44:14.772673,a,"Hello,
+
+Thank you for taking the time to leave a review. We appreciate your feedback. If you have any specific issues or concerns you'd like to address, please feel free to reach out to our customer support team. We are here to help and ensure you have a positive experience with our app.
+
+We look forward to hearing from you and assisting in any way we can. Thank you for your support.",5,1,1,False,
+77dc58c4-00ea-4d85-8284-a230fae3dd66,2025-04-13T10:44:14.792333,"Hello,
+
+Thank you for taking the time to leave a review. We appreciate your feedback. If you have any specific issues or concerns you'd like to address, please feel free to reach out to our customer support team. We are here to help and ensure you have a positive experience with our app.
+
+We look forward to hearing from you and assisting in any way we can. Thank you for your support.",5,1,1,False,
+af350a90-ed43-4c79-bed1-f4196874bbdf,2025-04-13T12:09:32.200493,"Hello,
+
+I'm sorry to hear that you're not satisfied with our application. We understand that you're facing challenges with the app, and we would like to learn more about the specific issues you encountered that led you to feel this way. Your feedback is crucial to us in identifying areas for improvement.
+
+If you could share more details about what aspects of the app you found lacking, we can address them promptly to enhance your experience. Your input is valuable to us, and we are committed to making the necessary improvements.
+
+Thank you for bringing this to our attention. We look forward to resolving any issues you may have and hope to provide you with a better app experience in the future.
+
+We appreciate your feedback and are dedicated to enhancing our app based on your suggestions.",3,3,3,False,
+4873af24-1713-4411-ac2a-d611e2574813,2025-04-13T12:10:05.633372,"Thank you for sharing your feedback with us and mentioning that Zoho app is better. We value your opinion and understand your preference for Zoho. Your insights are important to us as we strive to enhance our app. If there are specific features or aspects of Zoho that you find more appealing, we would love to hear more about them. Your feedback helps us identify areas where we can improve to better meet your needs. Feel free to share any suggestions or feedback you may have. We are committed to continuously improving our app based on user input, and we appreciate you taking the time to review our app. Thank you for your valuable feedback.",3,1,1,False,
+6363672f-2d9e-4a39-9e36-ed001a680084,2025-04-13T12:15:52.481333,"Thank you for sharing your feedback with us and mentioning that the Zoho app is better. We value your opinion and understand your preference for Zoho. Your insights are important to us as we strive to enhance our app. If there are specific features or aspects of the Zoho app that you find more appealing, we would love to hear more about them. Your feedback helps us identify areas where we can improve to better meet your needs. Feel free to share any suggestions or feedback you may have. We are committed to continuously improving our app based on user input, and we appreciate you taking the time to review our app. Thank you for your valuable feedback.",1,1,1,False,
+85324bae-5b92-4b1f-a045-7c3359e370e3,2025-04-13T13:11:28.016064,"We appreciate you sharing your concerns with us regarding the permissions and verification process in the app. We apologize for the inconvenience you've faced with the frequent update requests and the unclear guidelines for LTA allowances.
+
+To address the login issues, we recommend ensuring a stable internet connection and checking for any app updates that may improve the login process. Regarding the pending verification of your new car RC for the past two months, we understand your frustration and apologize for the delay. Please reach out to our support team at 1-800-XXX-XXXX to expedite the verification process.
+
+Your feedback is valuable to us, and we are continuously working to enhance our app's user experience. We appreciate your understanding and patience as we strive to improve our services. Thank you for bringing these issues to our attention.",2,4,5,True,
+aa305e29-04af-41a6-82fd-8899d78fffba,2025-04-14T08:14:33.984855,"Thank you for bringing the delayed OTP generation issue to our attention. We understand how frustrating this situation must be for you. To address this problem, we recommend checking your internet connection for stability and ensuring there are no network issues. Additionally, you can try restarting your device to see if that helps in receiving the OTP promptly. If the problem persists, please don't hesitate to reach out to our support team for further assistance. Your patience is greatly appreciated as we work to improve your experience with our app. Thank you for sharing your feedback with us.",5,5,3,True,

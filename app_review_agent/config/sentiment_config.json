@@ -1,0 +1,75 @@
+{
+  "thresholds": {
+    "very_negative": 0,
+    "negative": 0.3,
+    "positive": 0.8,
+    "very_positive": 0.9
+  },
+  "keywords": {
+    "positive": [
+      "good",
+      "great",
+      "excellent",
+      "awesome",
+      "love",
+      "perfect"
+    ],
+    "negative": [
+      "bad",
+      "poor",
+      "terrible",
+      "awful",
+      "hate",
+      "worst",
+      "never works",
+      "you will lose customers",
+      "don\u2019t work right"
+    ],
+    "intensifiers": [
+      "very",
+      "extremely",
+      "absolutely",
+      "totally",
+      "loose customers"
+    ],
+    "negations": [
+      "not",
+      "no",
+      "never",
+      "none",
+      "neither",
+      "nor"
+    ]
+  },
+  "issue_rules": [
+    {
+      "type": "login_issue",
+      "keywords": [
+        "login",
+        "sign in",
+        "cannot access",
+        "access denied"
+      ]
+    },
+    {
+      "type": "performance_issue",
+      "keywords": [
+        "slow",
+        "lag",
+        "crash",
+        "freeze",
+        "hanging"
+      ]
+    }
+  ],
+  "response_templates": [
+    {
+      "condition": "very_negative",
+      "text": "We sincerely apologize for your negative experience. {issue_text} We take your feedback seriously and will work to improve."
+    },
+    {
+      "condition": "positive",
+      "text": "Thank you for your positive feedback! We're glad you're enjoying the app."
+    }
+  ]
+}

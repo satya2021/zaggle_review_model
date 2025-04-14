@@ -1,1 +1,1 @@
-{"llm_provider": "openai", "openai_api_key": , "llama_model_path": "meta-llama/Llama-2-7b-hf"}
+{"llm_provider": "openai", "openai_api_key": "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", "llama_model_path": "meta-llama/Llama-2-7b-hf"}
